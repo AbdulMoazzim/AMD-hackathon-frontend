@@ -1,29 +1,36 @@
 import Image from "next/image";
 import { Logo } from "./Navbar";
 import Link from "next/link";
+import { idiqlat } from "@/lib/utils";
 
 const footerColumns = [
     {
         heading: "Product",
         links: [
-            "Symptom Explainer",
-            "Medical Documents Lens",
-            "PDF Export",
-            "Local Health Guidance",
+            { label: "Symptom Explainer", href: "#" },
+            { label: "Medical Documents Lens", href: "#" },
+            { label: "PDF Export", href: "#" },
+            { label: "Local Health Guidance", href: "#" },
         ],
     },
     {
         heading: "Governance",
         links: [
-            "Privacy Notice",
-            "Terms of Service",
-            "Clinical Disclaimer",
-            "Security Overview",
+            { label: "Privacy Notice", href: "#" },
+            { label: "Terms of Service", href: "#" },
+            { label: "Clinical Disclaimer", href: "#" },
+            { label: "Security Overview", href: "#" },
         ],
     },
     {
         heading: "Team",
-        links: ["Fakhir Khan", "Abdul Moazzam", "Asiya Sohail", "Ahiam Afraas"],
+        external: true,
+        links: [
+            { label: "Fakhir Khan", href: "https://www.linkedin.com/in/fakhir-khan-34ab822a5" },
+            { label: "Abdul Moazzim", href: "https://www.linkedin.com/in/abdulmoazzim" },
+            { label: "Asiya Sohail", href: "https://www.linkedin.com/in/asiya-sohail" },
+            { label: "Ahlam Afrass", href: "https://www.linkedin.com/in/ahlam-afrass" },
+        ],
     },
 ];
 
@@ -39,10 +46,10 @@ export function Footer() {
                 aria-hidden
             />
 
-            <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] pb-10">
+            <div className="grid gap-10 pb-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
                 <div className="md:px-12">
                     <Logo />
-                    <p className="mt-3 text-sm md:text-base">
+                    <p className="mt-3 text-base">
                         Empowering travelers, international residents, and students to
                         navigate foreign healthcare environments safely, clearly, and with
                         human dignity.
@@ -51,12 +58,21 @@ export function Footer() {
 
                 {footerColumns.map((col) => (
                     <div key={col.heading}>
-                        <h4 className="font-serif text-lg font-semibold">{col.heading}</h4>
-                        <ul className="mt-3 space-y-2 text-sm md:text-base">
+                        <h4 className={`${idiqlat.className} text-lg font-semibold`}>
+                            {col.heading}
+                        </h4>
+                        <ul className="mt-3 space-y-2 text-base">
                             {col.links.map((l) => (
-                                <li key={l}>
-                                    <Link href="#" className="hover:text-foreground">
-                                        {l}
+                                <li key={l.label}>
+                                    <Link
+                                        href={l.href}
+                                        className="hover:underline"
+                                        {...(col.external && {
+                                            target: "_blank",
+                                            rel: "noopener noreferrer",
+                                        })}
+                                    >
+                                        {l.label}
                                     </Link>
                                 </li>
                             ))}
@@ -65,7 +81,7 @@ export function Footer() {
                 ))}
             </div>
 
-            <p className="mt-12 text-center text-[11px] italic">
+            <p className="mt-12 text-center text-xs italic md:text-sm">
                 © 2026 WellAbroad Inc. Not a medical diagnostic tool or substitute for
                 direct professional medical advice.
             </p>

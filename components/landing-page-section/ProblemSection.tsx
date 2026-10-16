@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
+import { idiqlat } from "@/lib/utils";
 
 const problems = [
   {
@@ -24,10 +25,12 @@ export function Problem() {
     <section className="px-6 pb-24 pt-32">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
-          <h2 className="font-serif mx-auto max-w-2xl  text-3xl font-semibold md:text-4xl">
+          <h2
+            className={`${idiqlat.className} mx-auto max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
+          >
             Getting healthcare abroad shouldn&apos;t feel overwhelming.
           </h2>
-          <p className="mt-4 text-sm mx-auto max-w-5xl md:text-base">
+          <p className="mx-auto mt-4 max-w-5xl text-lg md:text-xl">
             When you don&apos;t speak the local language, even simple healthcare
             interactions can become stressful. Explaining how you feel,
             understanding medical instructions, or knowing where to go
@@ -38,7 +41,7 @@ export function Problem() {
         <div className="mt-14 grid gap-6 md:grid-cols-3">
           {problems.map((p) => (
             <Card key={p.title} className="overflow-hidden p-2">
-              <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg px-6 text-center text-sm italic">
+              <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg px-6 text-center text-sm italic md:text-[15px]">
                 <Image
                   src="/card-bg.svg"
                   alt=""
@@ -47,13 +50,15 @@ export function Problem() {
                   className="object-cover"
                   aria-hidden
                 />
-                <span className="relative z-10">
-                  &ldquo;{p.quote}&rdquo;
-                </span>
+                <span className="relative z-10">&ldquo;{p.quote}&rdquo;</span>
               </div>
               <CardContent className="px-4 pb-4 pt-5">
-                <h3 className="font-serif text-2xl font-semibold">{p.title}</h3>
-                <p className="mt-3 text-sm md:text-base leading-relaxed">
+                <h3
+                  className={`${idiqlat.className} text-2xl font-semibold leading-tight md:text-[28px]`}
+                >
+                  {p.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed md:text-[15px]">
                   {p.body}
                 </p>
               </CardContent>

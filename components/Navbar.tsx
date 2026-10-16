@@ -1,15 +1,10 @@
 import { Menu } from "lucide-react";
-import { Idiqlat } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { idiqlat } from "@/lib/utils";
 
-const idiqlat = Idiqlat({
-  weight: ['400'],
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ["inter"]
-});
+
 
 const navLinks = [
   { label: "How it works", href: "#how-it-works" },
@@ -28,12 +23,12 @@ export function Logo() {
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 items-center justify-between md:px-14 px-3">
         <Logo />
 
         {/* desktop */}
-        <nav className="hidden items-center gap-8 text-sm md:flex">
+        <nav className="hidden items-center gap-8 text-base md:flex">
           {navLinks.map((l) => (
             <Link key={l.href} href={l.href} className="hover:underline">
               {l.label}

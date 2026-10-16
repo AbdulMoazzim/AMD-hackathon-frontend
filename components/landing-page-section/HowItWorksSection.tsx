@@ -1,3 +1,4 @@
+import { idiqlat } from "@/lib/utils";
 import { Card } from "../ui/card";
 
 const steps = [
@@ -23,10 +24,12 @@ export function HowItWorks() {
     >
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          <h2 className="font-serif text-3xl font-semibold md:text-4xl">
+          <h2
+            className={`${idiqlat.className} text-[30px] font-semibold leading-tight md:text-[40px]`}
+          >
             Making healthcare easier to understand, wherever you are.
           </h2>
-          <p className="mt-4 text-sm md:text-base">
+          <p className="mt-4 text-lg md:text-xl">
             WellAbroad helps you explain your symptoms in another language,
             understand medical documents, and feel more prepared when navigating
             healthcare abroad.
@@ -35,25 +38,21 @@ export function HowItWorks() {
 
         <div className="mt-20 space-y-24">
           {steps.map((s, i) => (
-            <div
-              key={s.title}
-              className="grid items-center gap-10 md:grid-cols-2"
-            >
-              {/* text */}
+            <div key={s.title} className="grid items-center gap-10 md:grid-cols-2">
               <div
                 className={`max-w-sm ${i % 2 === 1 ? "md:order-2 md:justify-self-end" : "md:justify-self-center"
                   }`}
               >
-                <h3 className="font-serif text-2xl font-semibold">{s.title}</h3>
-                <p className="mt-4 text-sm md:text-base leading-relaxed">
-                  {s.body}
-                </p>
+                <h3
+                  className={`${idiqlat.className} text-2xl font-semibold leading-tight md:text-[28px]`}
+                >
+                  {s.title}
+                </h3>
+                <p className="mt-4 text-base leading-relaxed">{s.body}</p>
               </div>
 
-              {/* image placeholder: swap for <Image /> or a product mockup */}
               <Card
-                className={`aspect-7/5 w-full ${i % 2 === 1 ? "md:order-1" : ""
-                  }`}
+                className={`aspect-7/5 w-full ${i % 2 === 1 ? "md:order-1" : ""}`}
               />
             </div>
           ))}

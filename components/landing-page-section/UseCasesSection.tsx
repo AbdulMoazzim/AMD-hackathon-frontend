@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
+import { idiqlat } from "@/lib/utils";
 
 const useCases = [
   {
@@ -25,10 +26,12 @@ export function UseCases() {
     <section id="use-cases" className="px-6 py-24">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
-          <h2 className="font-serif max-w-2xl mx-auto text-3xl font-semibold md:text-4xl">
+          <h2
+            className={`${idiqlat.className} mx-auto max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
+          >
             Different situations.<br /> One less language barrier.
           </h2>
-          <p className="mt-4 text-sm md:text-base">
+          <p className="mt-4 text-lg md:text-xl">
             Whether you are traveling for a week, recovering from a doctor&apos;s
             visit, or relocating long-term, WellAbroad adapts to your medical
             context.
@@ -38,25 +41,22 @@ export function UseCases() {
         <div className="mt-14 grid gap-6 md:grid-cols-3">
           {useCases.map((u, i) => (
             <Link key={u.title} href={u.href} className="group">
-              <Card className="h-full overflow-hidden flex flex-col justify-between p-0">
+              <Card className="flex h-full flex-col justify-between overflow-hidden p-0">
                 <CardContent className="p-6">
                   <span className="flex size-9 items-center justify-center rounded-xl border border-black text-sm font-bold">
                     {i + 1}
                   </span>
-                  <h3 className="mt-5 font-serif text-2xl font-semibold">
+                  <h3
+                    className={`${idiqlat.className} mt-5 text-2xl font-semibold leading-tight md:text-[28px]`}
+                  >
                     {u.title}
                   </h3>
-                  <p className="mt-3 text-sm md:text-base leading-relaxed">
+                  <p className="mt-3 text-sm leading-relaxed md:text-[15px]">
                     {u.body}
                   </p>
                 </CardContent>
-                <div className="h-52 relative">
-                  <Image
-                    src="/card-bg.svg"
-                    alt="bg-card"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-52">
+                  <Image src="/card-bg.svg" alt="bg-card" fill className="object-cover" />
                 </div>
               </Card>
             </Link>
