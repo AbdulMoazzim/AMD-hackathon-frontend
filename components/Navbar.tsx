@@ -7,9 +7,9 @@ import { idiqlat } from "@/lib/utils";
 
 
 const navLinks = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Use cases", href: "#use-cases" },
-  { label: "Privacy & safety", href: "#privacy" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Use cases", href: "/#use-cases" },
+  { label: "Privacy & safety", href: "/#privacy" },
 ];
 
 export function Logo() {
