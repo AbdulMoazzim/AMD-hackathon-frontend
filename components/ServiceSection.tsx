@@ -48,6 +48,7 @@ export function ServiceSection({
             src={bannerImage}
             alt=""
             fill
+            loading="eager"
             priority
             sizes="100vw"
             className="object-cover"
