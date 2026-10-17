@@ -40,7 +40,7 @@ export function ServiceSection({
   copyright,
 }: ServiceSectionProps) {
   return (
-    <section className="px-4 py-6 md:px-14 md:pt-6 md:mb-24">
+    <section className="px-4 py-6 md:px-14 md:pt-6 md:mb-40">
       <div className="mx-auto max-w-6xl">
         {/* banner */}
         <div className="relative flex h-56 items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center md:h-64">

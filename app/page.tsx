@@ -7,7 +7,7 @@ import { UseCases } from "@/components/landing-page-section/UseCasesSection";
 
 export default function HomePage() {
   return (
-      <main>
+      <main >
         <Hero />
         <Problem />
         <HowItWorks />

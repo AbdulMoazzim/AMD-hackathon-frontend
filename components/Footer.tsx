@@ -36,7 +36,7 @@ const footerColumns = [
 
 export function Footer() {
     return (
-        <footer className="relative overflow-hidden rounded-t-2xl px-8 pt-24 pb-10">
+        <footer className="relative overflow-hidden rounded-t-2xl px-8 pt-32 pb-16">
             <Image
                 src="/background.svg"
                 alt="bg-footer"
@@ -46,8 +46,8 @@ export function Footer() {
                 aria-hidden
             />
 
-            <div className="grid gap-10 pb-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
-                <div className="md:px-12">
+            <div className="grid gap-10 pb-10 md:grid-cols-[3fr_1fr_1fr_1fr]">
+                <div className="md:px-12 max-w-3xl">
                     <Logo />
                     <p className="mt-3 text-base">
                         Empowering travelers, international residents, and students to

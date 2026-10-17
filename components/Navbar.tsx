@@ -24,7 +24,7 @@ export function Logo() {
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 items-center justify-between md:px-14 px-3">
+      <div className="mx-auto flex h-16 items-center justify-between lg:px-14 px-6">
         <Logo />
 
         {/* desktop */}

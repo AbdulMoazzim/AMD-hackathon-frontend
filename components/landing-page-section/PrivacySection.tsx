@@ -4,7 +4,7 @@ import { idiqlat } from "@/lib/utils";
 
 export function Privacy() {
   return (
-    <section id="privacy" className="bg-[#D2FFF5] px-6 py-24">
+    <section id="privacy" className="bg-[#D2FFF5] px-6 md:pt-32 md:pb-40 pt-26 pb-32">
       <div className="flex flex-col items-center text-center">
         <Image src="/icon.svg" alt="icon" width={40} height={40} className="size-16" />
         <h2
@@ -20,7 +20,7 @@ export function Privacy() {
           communicate clearly in a foreign clinic; and vanishing completely the
           moment your conversation ends.
         </p>
-        <Separator className="my-10 max-w-sm bg-[#b3b4af]" />
+        <Separator className="my-10 max-w-lg bg-[#b3b4af]" />
         <p className="text-xs text-muted-foreground md:text-sm">
           Designed for travelers and expats · Zero persistent data · Ephemeral
           by default

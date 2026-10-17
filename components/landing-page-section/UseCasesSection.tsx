@@ -23,8 +23,8 @@ const useCases = [
 
 export function UseCases() {
   return (
-    <section id="use-cases" className="px-6 py-24">
-      <div className="mx-auto max-w-6xl">
+    <section id="use-cases" className="px-6 py-40">
+      <div className="mx-auto max-w-360">
         <div className="text-center">
           <h2
             className={`${idiqlat.className} mx-auto max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
@@ -38,10 +38,10 @@ export function UseCases() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:gap-14 md:grid-cols-3">
           {useCases.map((u, i) => (
             <Link key={u.title} href={u.href} className="group">
-              <Card className="flex h-full flex-col justify-between overflow-hidden p-0">
+              <Card className="flex h-full flex-col justify-between overflow-hidden p-0 shadow-2xl">
                 <CardContent className="p-6">
                   <span className="flex size-9 items-center justify-center rounded-xl border border-black text-sm font-bold">
                     {i + 1}
@@ -55,7 +55,7 @@ export function UseCases() {
                     {u.body}
                   </p>
                 </CardContent>
-                <div className="relative h-52">
+                <div className="relative h-52 md:h-64">
                   <Image src="/card-bg.svg" alt="bg-card" fill className="object-cover" />
                 </div>
               </Card>

@@ -4,7 +4,7 @@ import { idiqlat } from "@/lib/utils";
 
 export function Hero() {
   return (
-    <section className="relative md:flex md:min-h-[80vh] md:items-center md:justify-center">
+    <section className="relative md:flex md:min-h-screen md:items-center md:justify-center">
       <div
         aria-hidden
         className="relative h-56 w-full overflow-hidden md:absolute md:inset-0 md:h-auto"

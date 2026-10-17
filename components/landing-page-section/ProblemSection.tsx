@@ -22,8 +22,8 @@ const problems = [
 
 export function Problem() {
   return (
-    <section className="px-6 pb-24 pt-32">
-      <div className="mx-auto max-w-6xl">
+    <section className="lg:px-14 px-6 py-32 md:py-60">
+      <div className="mx-auto max-w-360">
         <div className="text-center">
           <h2
             className={`${idiqlat.className} mx-auto max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
@@ -38,10 +38,10 @@ export function Problem() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:gap-14 md:grid-cols-3">
           {problems.map((p) => (
-            <Card key={p.title} className="overflow-hidden p-2">
-              <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg px-6 text-center text-sm italic md:text-[15px]">
+            <Card key={p.title} className="overflow-hidden p-4 rounded-3xl shadow-xl">
+              <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center text-sm italic md:text-[15px]">
                 <Image
                   src="/card-bg.svg"
                   alt=""
@@ -52,7 +52,7 @@ export function Problem() {
                 />
                 <span className="relative z-10">&ldquo;{p.quote}&rdquo;</span>
               </div>
-              <CardContent className="px-4 pb-4 pt-5">
+              <CardContent className="px-7 pb-10 pt-8">
                 <h3
                   className={`${idiqlat.className} text-2xl font-semibold leading-tight md:text-[28px]`}
                 >
