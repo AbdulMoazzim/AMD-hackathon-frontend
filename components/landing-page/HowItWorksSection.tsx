@@ -13,7 +13,6 @@ export async function HowItWorks() {
       className="bg-[linear-gradient(to_bottom,rgba(214,255,241,0.5)_0%,#F1F7F3_49%,rgba(122,231,194,0.5)_80%,rgba(127,202,154,0.5)_97%)] lg:px-14 px-6 pb-22 md:pb-40 pt-32 md:pt-60"
     >
       <div>
-        {/* "\n" in the messages becomes a line break from md up only */}
         <h2
           className={`${idiqlat.className} text-[30px] font-semibold leading-tight md:whitespace-pre-line md:text-[40px]`}
         >
@@ -38,7 +37,7 @@ export async function HowItWorks() {
             </div>
 
             <Card
-              className={`md:w-[50vw] mx-0 aspect-7/5 w-full ${i % 2 === 1 ? "md:ml-10 md:order-1" : "md:mr-10"}`}
+              className={`md:w-[50vw] mx-0 aspect-7/5 w-full ${i % 2 === 1 ? "md:ms-10 md:order-1" : "md:me-10"}`}
             />
           </div>
         ))}

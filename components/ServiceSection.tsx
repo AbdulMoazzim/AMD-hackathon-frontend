@@ -43,7 +43,7 @@ export function ServiceSection({
     <section className="py-6 md:mb-30">
       <div className="mx-auto max-w-[92%]">
         {/* banner */}
-        <div className="relative flex items-center justify-center overflow-hidden rounded-t-4xl w-full text-center h-96">
+        <div className="relative flex items-center justify-center overflow-hidden rounded-t-4xl w-full text-center h-72 md:h-96">
           <Image
             src={bannerImage}
             alt=""
@@ -102,7 +102,7 @@ export function ServiceSection({
 
         {/* footnote */}
         {(disclaimer || copyright) && (
-          <div className="mt-6 flex flex-col gap-2 text-xs italic md:flex-row md:justify-between">
+          <div className="mt-10 flex flex-col gap-2 text-xs italic md:flex-row md:justify-between">
             <p>{disclaimer}</p>
             <p>{copyright}</p>
           </div>

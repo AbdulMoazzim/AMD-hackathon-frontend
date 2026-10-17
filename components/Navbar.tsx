@@ -54,7 +54,7 @@ export async function Navbar() {
               <SheetContent side="right">
                 <SheetTitle className="sr-only">{t("menu")}</SheetTitle>
 
-                <nav className="mt-10 flex flex-col gap-6 px-6 text-lg">
+                <nav className="mt-20 flex flex-col gap-6 px-6 text-lg">
                   {navLinks.map((l) => (
                     <Link key={l.href} href={l.href}>
                       {l.label}

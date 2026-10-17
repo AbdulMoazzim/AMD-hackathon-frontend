@@ -8,6 +8,7 @@
     "documentsDescription": "Importez une ordonnance étrangère, un rapport d'analyses ou une note médicale pour obtenir une traduction et une explication claire en langage simple."
   },
   "common": {
+    "copyFailed": "Impossible de copier !",
     "disclaimer": "WellAbroad est une aide à la communication médicale, et non un service de diagnostic. En cas d'urgence, appelez votre numéro d'urgence local."
   },
   "nav": {
@@ -149,33 +150,11 @@
       "pick": "Choisissez votre pays pour voir les numéros d'urgence locaux."
     },
     "emergency": {
+      "seeMore": "Voir plus d'infos", "seeLess": "Masquer les détails",
       "title": "En cas d'urgence, appelez maintenant",
       "callIf": "Appelez immédiatement si vous avez",
       "others": "Autres numéros utiles ({country})",
       "source": "Source : {source}"
-    },
-    "progress": "Question {current} sur {total}",
-    "back": "Retour",
-    "next": "Suivant",
-    "review": "Vérifier mes réponses",
-    "scale": {
-      "low": "Aucune gêne",
-      "high": "Pire gêne imaginable"
-    },
-    "fields": {
-      "allergies": { "label": "Allergies", "placeholder": "p. ex. pénicilline, arachides" },
-      "meds": { "label": "Médicaments actuels", "placeholder": "Nom et dose si vous les connaissez" },
-      "conditions": { "label": "Problèmes de santé connus" },
-      "notes": { "label": "Autre chose à ajouter ?" }
-    },
-    "steps": {
-      "area": "Quel est le problème principal ?",
-      "start": "Depuis quand ?",
-      "onset": "Est-ce apparu brutalement ou progressivement ?",
-      "sev": "Quelle est l'intensité, de 0 à 10 ?",
-      "pattern": "Est-ce constant, ou cela va-t-il et vient-il ?",
-      "assoc": "D'autres symptômes ? Sélectionnez tout ce qui s'applique.",
-      "details": "Quelques précisions pour le médecin (facultatif)"
     },
     "warningSigns": [
       "Douleur ou oppression dans la poitrine",
@@ -186,11 +165,39 @@
       "Gonflement du visage ou de la gorge après une piqûre, un aliment ou un médicament",
       "Pensées de vous faire du mal"
     ],
+    "start": {
+      "title": "Préparez votre consultation",
+      "body": "Je vais vous poser quelques questions courtes sur vos symptômes, puis préparer un résumé à montrer au médecin.",
+      "button": "Commencer",
+      "privacy": "Ceci n'est pas un diagnostic. Le résumé vous aide à expliquer vos symptômes à un médecin."
+    },
+    "consult": {
+      "question": "Question {n}",
+      "quick": "Réponses rapides",
+      "placeholder": "Saisissez votre réponse (ou choisissez-en une ci-dessus)",
+      "send": "Envoyer",
+      "skip": "Passer cette question",
+      "loading": "Préparation…"
+    },
+    "urgent": {
+      "generic": "Vos réponses peuvent indiquer une urgence. Appelez le <call>{number}</call> ou consultez un médecin immédiatement."
+    },
+    "errors": {
+      "generic": "Une erreur s'est produite. Veuillez réessayer.",
+      "network": "Pas de connexion. Vérifiez votre accès internet et réessayez.",
+      "timeout": "Cela prend trop de temps. Veuillez réessayer.",
+      "upstream_error": "Le service est indisponible pour le moment. Réessayez dans un instant.",
+      "not_configured": "Le service n'est pas encore configuré.",
+      "session_expired": "Votre session a expiré. Veuillez recommencer.",
+      "invalid": "Cette réponse n'a pas pu être traitée. Raccourcissez-la ou reformulez-la.",
+      "unexpected": "Erreur inattendue. Veuillez réessayer."
+    },
     "summary": {
+      "forYou": "Dans votre langue",
+      "skipped": "Questions passées : {list}",
       "title": "Votre résumé",
       "introBilingual": "Montrez ceci à un médecin ou à un pharmacien. Il est rédigé en anglais et en {language}.",
       "introSingle": "Montrez ceci à un médecin ou à un pharmacien.",
-      "freeText": "Les réponses en texte libre sont affichées telles que vous les avez saisies et ne sont pas traduites.",
       "print": "Imprimer ou enregistrer en PDF",
       "copy": "Copier le texte",
       "copied": "Copié",
@@ -205,9 +212,16 @@
       "primary": "Rescue 1122 · ambulance, incendie et secours",
       "note": "Le Pakistan n'a pas de numéro d'urgence national unique, et le 1122 est géré par province : la couverture varie selon la région. Le 112 peut ne pas fonctionner de façon fiable. Les opérateurs parlent parfois peu l'anglais.",
       "contacts": {
-        "edhi": { "label": "Ambulance Edhi", "note": "Géré par une fondation caritative, très répandu" },
-        "police": { "label": "Police" },
-        "fire": { "label": "Pompiers" }
+        "edhi": {
+          "label": "Ambulance Edhi",
+          "note": "Géré par une fondation caritative, très répandu"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "fire": {
+          "label": "Pompiers"
+        }
       }
     },
     "US": {
@@ -215,8 +229,14 @@
       "primary": "Police, pompiers et ambulance",
       "note": "Les urgences hospitalières doivent prendre en charge toute personne en situation d'urgence, et les factures peuvent être élevées. Renseignez-vous sur les coûts pour les soins non urgents.",
       "contacts": {
-        "crisis": { "label": "Ligne d'aide en cas de crise ou de suicide (Suicide & Crisis Lifeline)", "note": "Appel ou SMS, 24 h/24, 7 j/7" },
-        "poison": { "label": "Centre antipoison (Poison Help)", "note": "Gratuit et confidentiel" }
+        "crisis": {
+          "label": "Ligne d'aide en cas de crise ou de suicide (Suicide & Crisis Lifeline)",
+          "note": "Appel ou SMS, 24 h/24, 7 j/7"
+        },
+        "poison": {
+          "label": "Centre antipoison (Poison Help)",
+          "note": "Gratuit et confidentiel"
+        }
       }
     },
     "GB": {
@@ -224,9 +244,17 @@
       "primary": "Police, pompiers, ambulance et garde côtière",
       "note": "Le 999 est réservé aux urgences. Pour les problèmes urgents mais sans danger vital, utilisez le NHS 111 ou un centre de soins urgents.",
       "contacts": {
-        "e112": { "label": "Joint aussi les services d'urgence" },
-        "nhs111": { "label": "NHS 111 · urgences non vitales", "note": "Angleterre, Écosse et pays de Galles" },
-        "samaritans": { "label": "Samaritans", "note": "Écoute gratuite, 24 h/24, 7 j/7" }
+        "e112": {
+          "label": "Joint aussi les services d'urgence"
+        },
+        "nhs111": {
+          "label": "NHS 111 · urgences non vitales",
+          "note": "Angleterre, Écosse et pays de Galles"
+        },
+        "samaritans": {
+          "label": "Samaritans",
+          "note": "Écoute gratuite, 24 h/24, 7 j/7"
+        }
       }
     },
     "DE": {
@@ -234,9 +262,17 @@
       "primary": "Ambulance et pompiers",
       "note": "Le 112 est réservé aux situations mettant la vie en danger. Appelez le 116 117 pour un besoin médical urgent en dehors des heures d'ouverture des cabinets.",
       "contacts": {
-        "onCall": { "label": "Médecin de garde · urgences non vitales", "note": "Réponse en allemand uniquement" },
-        "police": { "label": "Police" },
-        "telefonseelsorge": { "label": "Telefonseelsorge", "note": "Écoute gratuite en situation de crise, en allemand" }
+        "onCall": {
+          "label": "Médecin de garde · urgences non vitales",
+          "note": "Réponse en allemand uniquement"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "telefonseelsorge": {
+          "label": "Telefonseelsorge",
+          "note": "Écoute gratuite en situation de crise, en allemand"
+        }
       }
     },
     "FR": {
@@ -244,11 +280,23 @@
       "primary": "Numéro d'urgence européen",
       "note": "Le 112 fonctionne partout en France. Le 15 joint directement le SAMU pour les urgences médicales.",
       "contacts": {
-        "samu": { "label": "SAMU · urgences médicales" },
-        "fire": { "label": "Sapeurs-pompiers" },
-        "police": { "label": "Police" },
-        "suicide": { "label": "Numéro national de prévention du suicide", "note": "Gratuit, 24 h/24, 7 j/7" },
-        "sms": { "label": "Urgences par SMS ou fax", "note": "Pour les personnes sourdes ou malentendantes" }
+        "samu": {
+          "label": "SAMU · urgences médicales"
+        },
+        "fire": {
+          "label": "Sapeurs-pompiers"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "suicide": {
+          "label": "Numéro national de prévention du suicide",
+          "note": "Gratuit, 24 h/24, 7 j/7"
+        },
+        "sms": {
+          "label": "Urgences par SMS ou fax",
+          "note": "Pour les personnes sourdes ou malentendantes"
+        }
       }
     }
   },
@@ -270,9 +318,19 @@
       "reading": "Lecture de votre document… cela peut prendre jusqu'à une minute.",
       "cancel": "Annuler",
       "submit": "Traduire le document",
-      "privacy": "Votre fichier est envoyé via une connexion chiffrée pour être lu et traduit. N'importez pas de documents que vous ne souhaitez pas partager."
+      "privacy": "Votre document est envoyé de manière sécurisée pour être lu et traduit, puis supprimé à la fin de votre session. N'importez que ce que vous êtes à l'aise de partager."
     },
     "result": {
+      "extracted": "Informations trouvées dans le document",
+      "unreadable": "Parties illisibles",
+      "chat": {
+        "title": "Posez une question sur ce document",
+        "hint": "Posez une question sur le document, par exemple le sens d'un terme ou comment prendre un médicament.",
+        "placeholder": "Saisissez votre question",
+        "send": "Envoyer",
+        "thinking": "Réflexion en cours…",
+        "urgent": "Cela peut être urgent. Contactez un médecin ou les urgences locales immédiatement."
+      },
       "title": "Votre document, expliqué",
       "original": "Langue d'origine : {language}",
       "plain": "En langage simple",
@@ -286,6 +344,9 @@
       "another": "Traduire un autre document"
     },
     "errors": {
+      "network": "Pas de connexion. Vérifiez votre accès internet et réessayez.",
+  "session_expired": "Votre session a expiré. Veuillez réessayer.",
+  "invalid": "Cette demande n'a pas pu être traitée. Vérifiez-la et réessayez.",
       "type": "Veuillez importer un fichier JPG, PNG, WebP ou PDF.",
       "size": "Ce fichier dépasse {max} Mo. Essayez une photo ou un PDF plus léger.",
       "generic": "Nous n'avons pas pu traiter ce document. Veuillez réessayer.",

@@ -1,113 +1,55 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   Copy,
   ExternalLink,
+  Loader2,
   Phone,
   Printer,
   RotateCcw,
   TriangleAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { idiqlat } from "@/lib/utils";
+import { idiqlat, TOAST_ID } from "@/lib/utils";
+import { COUNTRIES, LANG_NAME, type Country, type CountryId, type Lang } from "../lib/symptoms-data";
 import {
-  COUNTRIES,
-  LABELS,
-  LANG_NAME,
-  MISC,
-  OPTIONS,
-  type Country,
-  type CountryId,
-  type Lang,
-  type Opt,
-  type T,
-} from "../lib/symptoms-data";
+  ApiError,
+  COUNTRY_EN,
+  LANG_EN,
+  createSession,
+  getSummary,
+  sendAnswer,
+  startConsult,
+  type AnswerResult,
+  type ConsultSummary,
+  type Question,
+} from "../lib/consult";
 
-type Answers = {
-  area?: string;
-  start?: string;
-  onset?: string;
-  sev?: number;
-  pattern?: string;
-  assoc: string[];
-  allergies: string;
-  meds: string;
-  conditions: string;
-  notes: string;
-};
+type Phase = "intro" | "asking" | "summary";
 
-const EMPTY: Answers = { assoc: [], allergies: "", meds: "", conditions: "", notes: "" };
-
-// `id` doubles as the message key: symptoms.steps.<id>
-type Step =
-  | { id: "area" | "start" | "onset" | "pattern"; kind: "single"; options: Opt[]; required?: boolean }
-  | { id: "sev"; kind: "scale" }
-  | { id: "assoc"; kind: "multi"; options: Opt[] }
-  | { id: "details"; kind: "details" };
-
-const STEPS: Step[] = [
-  { id: "area", kind: "single", options: OPTIONS.area, required: true },
-  { id: "start", kind: "single", options: OPTIONS.start },
-  { id: "onset", kind: "single", options: OPTIONS.onset },
-  { id: "sev", kind: "scale" },
-  { id: "pattern", kind: "single", options: OPTIONS.pattern },
-  { id: "assoc", kind: "multi", options: OPTIONS.assoc },
-  { id: "details", kind: "details" },
-];
-
-/* ------------------------------ helpers ------------------------------ */
-
-const ALL_LANGS: Lang[] = ["en", "fr", "de", "ur"];
-const same = (v: string): T => ({ en: v, fr: v, de: v, ur: v });
-const find = (list: Opt[], id?: string) => list.find((x) => x.id === id)?.t;
-
-// Rows for the doctor-facing summary: always English + the destination language,
-// whatever language the interface is in.
-function buildRows(a: Answers): { label: T; value: T }[] {
-  const un = MISC.unanswered;
-  const text = (v: string) => (v.trim() ? same(v.trim()) : un);
-  const assocValue: T = a.assoc.length
-    ? (Object.fromEntries(
-        ALL_LANGS.map((l) => [
-          l,
-          a.assoc
-            .map((id) => find(OPTIONS.assoc, id)?.[l])
-            .filter(Boolean)
-            .join(l === "ur" ? "، " : ", "),
-        ]),
-      ) as T)
-    : un;
-  const sevValue: T =
-    a.sev === undefined
-      ? un
-      : (Object.fromEntries(ALL_LANGS.map((l) => [l, MISC.sev[l].replace("{n}", String(a.sev))])) as T);
-
-  return [
-    { label: LABELS.area, value: find(OPTIONS.area, a.area) ?? un },
-    { label: LABELS.start, value: find(OPTIONS.start, a.start) ?? un },
-    { label: LABELS.onset, value: find(OPTIONS.onset, a.onset) ?? un },
-    { label: LABELS.sev, value: sevValue },
-    { label: LABELS.pattern, value: find(OPTIONS.pattern, a.pattern) ?? un },
-    { label: LABELS.assoc, value: assocValue },
-    { label: LABELS.allergies, value: text(a.allergies) },
-    { label: LABELS.meds, value: text(a.meds) },
-    { label: LABELS.conditions, value: text(a.conditions) },
-    { label: LABELS.notes, value: text(a.notes) },
-  ];
-}
-
-const h2 = `${idiqlat.className} text-[30px] font-semibold leading-tight md:text-[40px]`;
+const h2 = `${idiqlat.className} text-[28px] font-semibold leading-tight`;
 const h3 = `${idiqlat.className} text-2xl font-semibold leading-tight md:text-[28px]`;
 
-/* ------------------------------ pieces ------------------------------ */
+const field =
+  "w-full rounded-xl border bg-white px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-function CallLink({ tel, children, className = "" }: { tel: string; children: React.ReactNode; className?: string }) {
+
+export function CallLink({
+  tel,
+  children,
+  className = "",
+}: {
+  tel: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <a
       href={`tel:${tel}`}
@@ -118,9 +60,12 @@ function CallLink({ tel, children, className = "" }: { tel: string; children: Re
   );
 }
 
-function EmergencyPanel({ country }: { country: Country | null }) {
+export function EmergencyPanel({ country }: { country: Country | null }) {
   const t = useTranslations("symptoms");
   const tc = useTranslations("countries");
+  const detailsId = useId();
+
+  const [openFor, setOpenFor] = useState<string | null>(null);
 
   if (!country) {
     return (
@@ -130,6 +75,7 @@ function EmergencyPanel({ country }: { country: Country | null }) {
     );
   }
 
+  const open = openFor === country.id;
   const warningSigns = t.raw("warningSigns") as string[];
 
   return (
@@ -152,7 +98,24 @@ function EmergencyPanel({ country }: { country: Country | null }) {
         </Button>
       </div>
 
-      <div className="grid gap-6 border-t border-red-600/20 bg-white p-6 md:grid-cols-2">
+      {/* "See more info" toggle */}
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={detailsId}
+        onClick={() => setOpenFor(open ? null : country.id)}
+        className="flex w-full items-center justify-center gap-2 border-t border-red-600/20 px-6 py-3 text-sm font-semibold text-red-900 transition-colors hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-700 md:text-[15px]"
+      >
+        {open ? t("emergency.seeLess") : t("emergency.seeMore")}
+        <ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+      </button>
+
+      {/* the white part, collapsed by default */}
+      <div
+        id={detailsId}
+        hidden={!open}
+        className="grid gap-6 border-t border-red-600/20 bg-white p-6 md:grid-cols-2"
+      >
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide md:text-sm">{t("emergency.callIf")}</p>
           <ul className="mt-3 space-y-2 text-sm md:text-[15px]">
@@ -205,21 +168,22 @@ function Tile({
   selected,
   onClick,
   children,
-  className = "",
+  disabled,
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  className?: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       aria-pressed={selected}
+      disabled={disabled}
       onClick={onClick}
-      className={`flex min-h-14 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+      className={`flex min-h-14 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 ${
         selected ? "border-foreground bg-foreground text-background" : "bg-white hover:bg-muted"
-      } ${className}`}
+      }`}
     >
       <span>{children}</span>
       {selected && <Check className="size-4 shrink-0" aria-hidden />}
@@ -227,98 +191,121 @@ function Tile({
   );
 }
 
-const field =
-  "w-full rounded-xl border bg-white px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-
-/* ------------------------------ summary ------------------------------ */
+// Shown as soon as the backend raises a red flag, in the question phase and in the summary.
+function UrgentAlert({ message, country }: { message: string | null; country: Country }) {
+  const t = useTranslations("symptoms");
+  return (
+    <div
+      role="alert"
+      className="flex gap-3 rounded-2xl border border-red-600/40 bg-red-50 p-4 text-sm text-red-900 print:hidden md:text-[15px]"
+    >
+      <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden />
+      <div className="space-y-1">
+        {message && <p>{message}</p>}
+        <p>
+          {t.rich("urgent.generic", {
+            number: country.primary.number,
+            call: (chunks) => (
+              <CallLink tel={country.primary.tel} className="text-red-900">
+                {chunks}
+              </CallLink>
+            ),
+          })}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function Summary({
-  answers,
+  summary,
   country,
   onRestart,
 }: {
-  answers: Answers;
+  summary: ConsultSummary;
   country: Country;
   onRestart: () => void;
 }) {
   const t = useTranslations("symptoms");
   const [copied, setCopied] = useState(false);
-  const rows = buildRows(answers);
   const lang = country.lang;
-  const bilingual = lang !== "en";
-  const urgent = answers.area === "chest" || (answers.sev ?? 0) >= 8;
+  const dir = lang === "ur" ? "rtl" : "ltr";
+
+  const norm = (s: string) => (s ?? "").trim();
+  const en = norm(summary.english);
+  const local = norm(summary.local_language);
+  const mine = norm(summary.user_language);
+  const showLocal = lang !== "en" && !!local && local !== en;
+  const showMine = !!mine && mine !== en && mine !== local;
+  const skipped = summary.skipped ?? [];
+  const common = useTranslations("common")
 
   async function copy() {
-    const lines = rows.map((r) => `${r.label.en}: ${r.value.en}`);
-    if (bilingual) lines.push("", ...rows.map((r) => `${r.label[lang]}: ${r.value[lang]}`));
+    const parts = [en, showLocal ? local : "", skipped.length ? t("summary.skipped", { list: skipped.join(", ") }) : ""]
+      .filter(Boolean)
+      .join("\n\n");
     try {
-      await navigator.clipboard.writeText(lines.join("\n"));
+      await navigator.clipboard.writeText(parts);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* clipboard unavailable */
+      toast(common("copyFailed"));
     }
   }
 
   return (
     <div className="space-y-6">
-      {urgent && (
-        <div
-          role="alert"
-          className="flex gap-3 rounded-2xl border border-red-600/40 bg-red-50 p-4 text-sm text-red-900 print:hidden md:text-[15px]"
-        >
-          <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden />
-          <p>
-            {t.rich("summary.urgent", {
-              number: country.primary.number,
-              call: (chunks) => (
-                <CallLink tel={country.primary.tel} className="text-red-900">
-                  {chunks}
-                </CallLink>
-              ),
-            })}
-          </p>
-        </div>
-      )}
-
       <div>
         <h2 className={h2}>{t("summary.title")}</h2>
         <p className="mt-2 text-sm md:text-[15px] print:hidden">
-          {bilingual ? t("summary.introBilingual", { language: LANG_NAME[lang] }) : t("summary.introSingle")}{" "}
-          {t("summary.freeText")}
+          {showLocal ? t("summary.introBilingual", { language: LANG_NAME[lang] }) : t("summary.introSingle")}
         </p>
       </div>
 
       <div className="overflow-hidden rounded-2xl border">
         <div
           className={`grid bg-muted text-xs font-semibold uppercase tracking-wide md:text-sm ${
-            bilingual ? "grid-cols-2" : "grid-cols-1"
+            showLocal ? "grid-cols-2" : "grid-cols-1"
           }`}
         >
           <div className="px-4 py-3" lang="en">
             {LANG_NAME.en}
           </div>
-          {bilingual && (
-            <div className="border-s px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
+          {showLocal && (
+            <div className="border-s px-4 py-3" dir={dir} lang={lang}>
               {LANG_NAME[lang]}
             </div>
           )}
         </div>
-        {rows.map((r) => (
-          <div key={r.label.en} className={`grid border-t ${bilingual ? "grid-cols-2" : "grid-cols-1"}`}>
-            <div className="px-4 py-3" lang="en">
-              <p className="text-xs text-muted-foreground md:text-sm">{r.label.en}</p>
-              <p className="text-base">{r.value.en}</p>
-            </div>
-            {bilingual && (
-              <div className="border-s px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
-                <p className="text-xs text-muted-foreground md:text-sm">{r.label[lang]}</p>
-                <p className="text-base">{r.value[lang]}</p>
-              </div>
-            )}
+        <div className={`grid border-t ${showLocal ? "md:grid-cols-2" : "grid-cols-1"}`}>
+          <div className="whitespace-pre-wrap px-4 py-4 text-base leading-relaxed" lang="en">
+            {en}
           </div>
-        ))}
+          {showLocal && (
+            <div
+              className="whitespace-pre-wrap border-t px-4 py-4 text-base leading-relaxed md:border-s md:border-t-0"
+              dir={dir}
+              lang={lang}
+            >
+              {local}
+            </div>
+          )}
+        </div>
+        {skipped.length > 0 && (
+          <p className="border-t px-4 py-3 text-xs text-muted-foreground md:text-sm">
+            {t("summary.skipped", { list: skipped.join(", ") })}
+          </p>
+        )}
       </div>
+
+      {showMine && (
+        <div className="print:hidden">
+          <h3 className={h3}>{t("summary.forYou")}</h3>
+          <p className="mt-3 whitespace-pre-wrap rounded-2xl bg-muted p-5 text-base leading-relaxed">{mine}</p>
+        </div>
+      )}
+
+      {summary.disclaimer && <p className="text-xs italic md:text-sm">{summary.disclaimer}</p>}
 
       <div className="flex flex-col gap-3 md:flex-row print:hidden">
         <Button onClick={() => window.print()} className="h-12 gap-2 px-6 text-[15px] md:text-base">
@@ -336,44 +323,93 @@ function Summary({
   );
 }
 
-/* ------------------------------ main ------------------------------ */
-
 export function SymptomsExperience() {
   const t = useTranslations("symptoms");
   const tc = useTranslations("countries");
   const common = useTranslations("common");
-  const ui = useLocale() as Lang; // language used for option labels in the questionnaire
+  const ui = useLocale() as Lang;
 
   const [countryId, setCountryId] = useState<CountryId | null>(null);
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Answers>(EMPTY);
+  const [phase, setPhase] = useState<Phase>("intro");
+  const [sid, setSid] = useState<string | null>(null);
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState("");
+  const [urgent, setUrgent] = useState<{ message: string | null } | null>(null);
+  const [summary, setSummary] = useState<ConsultSummary | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const country = COUNTRIES.find((c) => c.id === countryId) ?? null;
-  const current = STEPS[step];
-  const done = step >= STEPS.length;
 
-  const set = <K extends keyof Answers>(k: K, v: Answers[K]) => setAnswers((a) => ({ ...a, [k]: v }));
+  function reset() {
+    setPhase("intro");
+    setSid(null);
+    setQuestion(null);
+    setCount(0);
+    setText("");
+    setUrgent(null);
+    setSummary(null);
+  }
 
-  function toggleAssoc(id: string) {
-    setAnswers((a) => {
-      if (id === "none") return { ...a, assoc: a.assoc.includes("none") ? [] : ["none"] };
-      const without = a.assoc.filter((x) => x !== "none");
-      return { ...a, assoc: without.includes(id) ? without.filter((x) => x !== id) : [...without, id] };
+  function pickCountry(id: CountryId) {
+    if (id === countryId) return;
+    reset(); // a session is tied to a country/language, so start over
+    setCountryId(id);
+  }
+
+  async function run(fn: () => Promise<void>) {
+    setBusy(true);
+    try {
+      await fn();
+    } catch (e) {
+      // an expired session can't continue, so go back to the start button
+      if (e instanceof ApiError && e.code === "session_expired") reset();
+      toast.error(t("errors.generic"), { id: TOAST_ID });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handle(r: AnswerResult, id: string) {
+    if (r.red_flag || r.urgent_message || r.question?.red_flag) {
+      setUrgent({ message: r.urgent_message ?? null });
+    }
+    if (r.done || !r.question || r.question.done) {
+      setSummary(await getSummary(id));
+      setPhase("summary");
+    } else {
+      setQuestion(r.question);
+      setCount((n) => n + 1);
+      setText("");
+      setPhase("asking");
+    }
+  }
+
+  const start = () =>
+    country &&
+    run(async () => {
+      const s = await createSession({
+        ui_lang: LANG_EN[ui],
+        country: COUNTRY_EN[country.id],
+        local_lang: LANG_EN[country.lang],
+      });
+      setSid(s.session_id);
+      await handle(await startConsult(s.session_id), s.session_id);
     });
-  }
 
-  function restart() {
-    setAnswers(EMPTY);
-    setStep(0);
-  }
+  const submit = (skip: boolean) =>
+    sid &&
+    run(async () => {
+      await handle(await sendAnswer(sid, skip ? null : text.trim(), skip), sid);
+    });
 
-  const canNext = !(current && current.kind === "single" && current.required && !answers[current.id]);
+  const quick = question?.quick_options ?? [];
 
   return (
-    <section className="px-4 py-6 md:px-14 md:py-10 print:p-0 md:mb-20">
-      <div className="mx-auto max-w-6xl">
+    <section className="px-4 py-6 md:px-14 md:py-10 print:p-0 md:mb-6">
+      <div className="mx-auto max-w-[96%]">
         {/* banner */}
-        <div className="relative flex items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center h-80 print:hidden">
+        <div className="relative flex items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center h-72 md:h-96 print:hidden">
           <Image src="/background.svg" alt="" fill priority sizes="100vw" className="object-cover" aria-hidden />
           <div className="relative z-10 mx-auto max-w-2xl">
             <h1 className={`${idiqlat.className} text-[30px] font-semibold leading-tight md:text-[40px]`}>
@@ -394,7 +430,8 @@ export function SymptomsExperience() {
                   key={c.id}
                   variant={countryId === c.id ? "default" : "outline"}
                   aria-pressed={countryId === c.id}
-                  onClick={() => setCountryId(c.id)}
+                  disabled={busy}
+                  onClick={() => pickCountry(c.id)}
                   className="h-11 px-5 text-[15px] md:text-base"
                 >
                   {tc(`${c.id}.name`)}
@@ -407,121 +444,88 @@ export function SymptomsExperience() {
             <EmergencyPanel country={country} />
           </div>
 
-          {/* questionnaire / summary */}
+          {/* consultation */}
           {country && (
-            <div>
-              {done ? (
-                <Summary answers={answers} country={country} onRestart={restart} />
-              ) : (
+            <div className="space-y-6">
+              {urgent && <UrgentAlert message={urgent.message} country={country} />}
+
+              {phase === "intro" && (
+                <div className="mx-auto max-w-2xl space-y-5 print:hidden">
+                  <h2 className={h2}>{t("start.title")}</h2>
+                  <p className="text-base">{t("start.body")}</p>
+                  <Button onClick={start} disabled={busy} className="h-14 gap-2 px-8 text-[15px] md:text-base">
+                    {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
+                    {t("start.button")}
+                    {!busy && <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />}
+                  </Button>
+                  <p className="text-xs italic md:text-sm">{t("start.privacy")}</p>
+                </div>
+              )}
+
+              {phase === "asking" && question && (
                 <div className="mx-auto max-w-2xl print:hidden">
-                  <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span>{t("progress", { current: step + 1, total: STEPS.length })}</span>
-                  </div>
-                  <div className="mt-2 h-1.5 rounded-full bg-muted" aria-hidden>
-                    <div
-                      className="h-full rounded-full bg-foreground transition-all"
-                      style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-                    />
-                  </div>
+                  <p className="text-xs md:text-sm">{t("consult.question", { n: count })}</p>
+                  <h2 className={`${h2} mt-4`}>{question.question}</h2>
 
-                  <h2 className={`${h2} mt-8`}>{t(`steps.${current.id}`)}</h2>
-
-                  <div className="mt-6">
-                    {current.kind === "single" && (
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {current.options.map((opt) => (
-                          <Tile
-                            key={opt.id}
-                            selected={answers[current.id] === opt.id}
-                            onClick={() => set(current.id, opt.id)}
-                          >
-                            {opt.t[ui]}
+                  {quick.length > 0 && (
+                    <div className="mt-6">
+                      <p className="text-sm md:text-[15px]">{t("consult.quick")}</p>
+                      <div className="mt-2 grid gap-3 md:grid-cols-2">
+                        {quick.map((o) => (
+                          <Tile key={o} selected={text === o} disabled={busy} onClick={() => setText(o)}>
+                            {o}
                           </Tile>
                         ))}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {current.kind === "scale" && (
-                      <div>
-                        <div className="grid grid-cols-6 gap-2 md:grid-cols-11">
-                          {Array.from({ length: 11 }, (_, n) => (
-                            <Tile
-                              key={n}
-                              selected={answers.sev === n}
-                              onClick={() => set("sev", n)}
-                              className="justify-center px-0"
-                            >
-                              {n}
-                            </Tile>
-                          ))}
-                        </div>
-                        <div className="mt-2 flex justify-between text-xs text-muted-foreground md:text-sm">
-                          <span>{t("scale.low")}</span>
-                          <span>{t("scale.high")}</span>
-                        </div>
-                      </div>
-                    )}
+                  <textarea
+                    className={`${field} mt-6 min-h-24`}
+                    value={text}
+                    maxLength={2000}
+                    disabled={busy}
+                    placeholder={t("consult.placeholder")}
+                    onChange={(e) => setText(e.target.value)}
+                  />
 
-                    {current.kind === "multi" && (
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {current.options.map((opt) => (
-                          <Tile key={opt.id} selected={answers.assoc.includes(opt.id)} onClick={() => toggleAssoc(opt.id)}>
-                            {opt.t[ui]}
-                          </Tile>
-                        ))}
-                      </div>
-                    )}
-
-                    {current.kind === "details" && (
-                      <div className="space-y-4">
-                        {(["allergies", "meds", "conditions"] as const).map((key) => (
-                          <label key={key} className="block">
-                            <span className="text-sm md:text-[15px]">{t(`fields.${key}.label`)}</span>
-                            <input
-                              className={`${field} mt-1`}
-                              value={answers[key]}
-                              placeholder={key === "conditions" ? undefined : t(`fields.${key}.placeholder`)}
-                              onChange={(e) => set(key, e.target.value)}
-                            />
-                          </label>
-                        ))}
-                        <label className="block">
-                          <span className="text-sm md:text-[15px]">{t("fields.notes.label")}</span>
-                          <textarea
-                            className={`${field} mt-1 min-h-24`}
-                            value={answers.notes}
-                            onChange={(e) => set("notes", e.target.value)}
-                          />
-                        </label>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-8 flex items-center justify-between gap-3">
+                  <div className="mt-6 flex items-center justify-between gap-3">
                     <Button
                       variant="ghost"
-                      disabled={step === 0}
-                      onClick={() => setStep((s) => s - 1)}
-                      className="h-12 gap-2 px-5 text-[15px] md:text-base"
+                      disabled={busy}
+                      onClick={() => submit(true)}
+                      className="h-12 px-5 text-[15px] md:text-base"
                     >
-                      <ArrowLeft className="size-4" aria-hidden /> {t("back")}
+                      {t("consult.skip")}
                     </Button>
                     <Button
-                      disabled={!canNext}
-                      onClick={() => setStep((s) => s + 1)}
+                      disabled={busy || !text.trim()}
+                      onClick={() => submit(false)}
                       className="h-12 gap-2 px-8 text-[15px] md:text-base"
                     >
-                      {step === STEPS.length - 1 ? t("review") : t("next")}
-                      <ArrowRight className="size-4" aria-hidden />
+                      {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
+                      {t("consult.send")}
+                      {!busy && <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />}
                     </Button>
                   </div>
                 </div>
               )}
+
+              {phase === "summary" && summary && <Summary summary={summary} country={country} onRestart={reset} />}
+
+              <div aria-live="polite" className="mx-auto max-w-2xl print:hidden">
+                {busy && phase !== "intro" && (
+                  <p className="flex items-center gap-3 rounded-xl bg-muted p-4 text-sm md:text-[15px]">
+                    <Loader2 className="size-5 shrink-0 animate-spin" aria-hidden />
+                    {t("consult.loading")}
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>
 
-        <div className="mt-6 flex flex-col gap-2 text-xs italic md:flex-row md:justify-between print:mt-4">
+        <div className="mt-8 flex flex-col gap-2 text-xs italic md:flex-row md:justify-between print:mt-4">
           <p>{country ? t("disclaimerWith", { number: country.primary.number }) : common("disclaimer")}</p>
           <p>© 2026 WellAbroad</p>
         </div>

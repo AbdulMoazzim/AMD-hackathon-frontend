@@ -2,31 +2,42 @@
 
 import { useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { ChevronDown, Globe } from "lucide-react";
-import { LOCALE_NAMES, locales } from "@/i18n/config";
+import { Globe } from "lucide-react";
+import { LOCALE_NAMES, locales, type Locale } from "@/i18n/config";
 import { setLocale } from "@/app/actions/i18n-action";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function LanguageSwitcher({ className = "" }: { className?: string }) {
-  const locale = useLocale();
+  const locale = useLocale() as Locale;
   const t = useTranslations("nav");
   const [pending, startTransition] = useTransition();
 
   return (
-    <label className={`relative flex justify-between items-center ${className}`}>
-      <Globe className="pointer-events-none absolute left-3 size-4" aria-hidden />
-      <select
-        value={locale}
-        disabled={pending}
-        onChange={(e) => startTransition(() => setLocale(e.target.value))}
-        className="h-9 cursor-pointer appearance-none rounded-md border bg-white pl-9 pr-8 text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
-      >
+    <Select
+      value={locale}
+      disabled={pending}
+      onValueChange={(next) => {
+        if (next && next !== locale) startTransition(() => setLocale(next));
+      }}
+    >
+      <SelectTrigger aria-label={t("language")} className={`h-9 min-w-36 gap-2 bg-white ${className}`}>
+        <Globe className="size-4 shrink-0" aria-hidden />
+        {/* explicit label so the trigger shows the language name, not the raw code */}
+        <SelectValue>{LOCALE_NAMES[locale]}</SelectValue>
+      </SelectTrigger>
+      <SelectContent>
         {locales.map((l) => (
-          <option key={l} value={l}>
+          <SelectItem key={l} value={l}>
             {LOCALE_NAMES[l]}
-          </option>
+          </SelectItem>
         ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute left-25 size-4" aria-hidden />
-    </label>
+      </SelectContent>
+    </Select>
   );
 }

@@ -8,6 +8,7 @@
     "documentsDescription": "Upload a foreign prescription, lab report or medical note to get a translation and a clear, plain-language explanation."
   },
   "common": {
+    "copyFailed": "Unable to copy!",
     "disclaimer": "WellAbroad is a medical communication aid, not a diagnostic service. In an emergency, call your local emergency number."
   },
   "nav": {
@@ -149,33 +150,11 @@
       "pick": "Choose your country to see local emergency numbers."
     },
     "emergency": {
+      "seeMore": "See more info", "seeLess": "Hide details",
       "title": "In an emergency, call now",
       "callIf": "Call immediately if you have",
       "others": "Other useful numbers ({country})",
       "source": "Source: {source}"
-    },
-    "progress": "Question {current} of {total}",
-    "back": "Back",
-    "next": "Next",
-    "review": "Review my answers",
-    "scale": {
-      "low": "No discomfort",
-      "high": "Worst imaginable"
-    },
-    "fields": {
-      "allergies": { "label": "Allergies", "placeholder": "e.g. penicillin, peanuts" },
-      "meds": { "label": "Medication right now", "placeholder": "Name and dose if you know it" },
-      "conditions": { "label": "Known health conditions" },
-      "notes": { "label": "Anything else to add?" }
-    },
-    "steps": {
-      "area": "What is the main problem?",
-      "start": "When did it start?",
-      "onset": "Did it start suddenly or gradually?",
-      "sev": "How strong is it, from 0 to 10?",
-      "pattern": "Is it constant, or does it come and go?",
-      "assoc": "Any other symptoms? Choose all that apply.",
-      "details": "A few details for the doctor (optional)"
     },
     "warningSigns": [
       "Chest pain or pressure",
@@ -186,11 +165,39 @@
       "Swelling of the face or throat after a sting, food or medicine",
       "Thoughts of harming yourself"
     ],
+    "start": {
+      "title": "Prepare for your consultation",
+      "body": "I'll ask a few short questions about your symptoms, then prepare a summary you can show the doctor.",
+      "button": "Start",
+      "privacy": "This is not a diagnosis. The summary helps you explain your symptoms to a doctor."
+    },
+    "consult": {
+      "question": "Question {n}",
+      "quick": "Quick answers",
+      "placeholder": "Type your answer (or pick one above)",
+      "send": "Send",
+      "skip": "Skip this question",
+      "loading": "Preparing…"
+    },
+    "urgent": {
+      "generic": "Your answers may point to something urgent. Call <call>{number}</call> or get medical help now."
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "network": "No connection. Check your internet and try again.",
+      "timeout": "This is taking too long. Please try again.",
+      "upstream_error": "The service is unavailable right now. Please try again shortly.",
+      "not_configured": "The service isn't set up yet.",
+      "session_expired": "Your session expired. Please start again.",
+      "invalid": "That answer couldn't be processed. Please shorten or rephrase it.",
+      "unexpected": "Unexpected error. Please try again."
+    },
     "summary": {
+      "forYou": "In your language",
+      "skipped": "Skipped questions: {list}",
       "title": "Your summary",
       "introBilingual": "Show this to a doctor or pharmacist. It is in English and {language}.",
       "introSingle": "Show this to a doctor or pharmacist.",
-      "freeText": "Free-text answers are shown as you typed them and are not translated.",
       "print": "Print or save as PDF",
       "copy": "Copy text",
       "copied": "Copied",
@@ -205,9 +212,16 @@
       "primary": "Rescue 1122 · ambulance, fire & rescue",
       "note": "Pakistan has no single nationwide emergency number, and 1122 is run provincially, so coverage varies by area. 112 may not work reliably. Operators may speak limited English.",
       "contacts": {
-        "edhi": { "label": "Edhi ambulance", "note": "Charity-run, widely available" },
-        "police": { "label": "Police" },
-        "fire": { "label": "Fire brigade" }
+        "edhi": {
+          "label": "Edhi ambulance",
+          "note": "Charity-run, widely available"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "fire": {
+          "label": "Fire brigade"
+        }
       }
     },
     "US": {
@@ -215,8 +229,14 @@
       "primary": "Police, fire & ambulance",
       "note": "Emergency rooms must see anyone in an emergency, and bills can be high. Ask about costs for non-emergency care.",
       "contacts": {
-        "crisis": { "label": "Suicide & Crisis Lifeline", "note": "Call or text, 24/7" },
-        "poison": { "label": "Poison Help", "note": "Free and confidential" }
+        "crisis": {
+          "label": "Suicide & Crisis Lifeline",
+          "note": "Call or text, 24/7"
+        },
+        "poison": {
+          "label": "Poison Help",
+          "note": "Free and confidential"
+        }
       }
     },
     "GB": {
@@ -224,9 +244,17 @@
       "primary": "Police, fire, ambulance & coastguard",
       "note": "999 is for emergencies. For urgent problems that are not life-threatening, use NHS 111 or an urgent treatment centre.",
       "contacts": {
-        "e112": { "label": "Also connects to emergency services" },
-        "nhs111": { "label": "NHS 111 · urgent, not life-threatening", "note": "England, Scotland and Wales" },
-        "samaritans": { "label": "Samaritans", "note": "Free, 24/7 emotional support" }
+        "e112": {
+          "label": "Also connects to emergency services"
+        },
+        "nhs111": {
+          "label": "NHS 111 · urgent, not life-threatening",
+          "note": "England, Scotland and Wales"
+        },
+        "samaritans": {
+          "label": "Samaritans",
+          "note": "Free, 24/7 emotional support"
+        }
       }
     },
     "DE": {
@@ -234,9 +262,17 @@
       "primary": "Ambulance & fire",
       "note": "112 is for life-threatening situations. Call 116 117 for urgent medical needs outside practice hours.",
       "contacts": {
-        "onCall": { "label": "On-call doctor · urgent, not life-threatening", "note": "Answers in German only" },
-        "police": { "label": "Police" },
-        "telefonseelsorge": { "label": "Telefonseelsorge", "note": "Free crisis support, German" }
+        "onCall": {
+          "label": "On-call doctor · urgent, not life-threatening",
+          "note": "Answers in German only"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "telefonseelsorge": {
+          "label": "Telefonseelsorge",
+          "note": "Free crisis support, German"
+        }
       }
     },
     "FR": {
@@ -244,11 +280,23 @@
       "primary": "European emergency number",
       "note": "112 works everywhere in France. 15 reaches the SAMU directly for medical emergencies.",
       "contacts": {
-        "samu": { "label": "SAMU · medical emergencies" },
-        "fire": { "label": "Fire & rescue (pompiers)" },
-        "police": { "label": "Police" },
-        "suicide": { "label": "Suicide prevention line", "note": "Free, 24/7" },
-        "sms": { "label": "Emergency by SMS or fax", "note": "For deaf or hard-of-hearing callers" }
+        "samu": {
+          "label": "SAMU · medical emergencies"
+        },
+        "fire": {
+          "label": "Fire & rescue (pompiers)"
+        },
+        "police": {
+          "label": "Police"
+        },
+        "suicide": {
+          "label": "Suicide prevention line",
+          "note": "Free, 24/7"
+        },
+        "sms": {
+          "label": "Emergency by SMS or fax",
+          "note": "For deaf or hard-of-hearing callers"
+        }
       }
     }
   },
@@ -270,9 +318,19 @@
       "reading": "Reading your document… this can take up to a minute.",
       "cancel": "Cancel",
       "submit": "Translate document",
-      "privacy": "Your file is sent over an encrypted connection to be read and translated. Don't upload documents you aren't comfortable sharing."
+      "privacy": "Your document is sent securely to be read and translated, then deleted when your session ends. Only upload what you're comfortable sharing."
     },
     "result": {
+      "extracted": "Details found in the document",
+      "unreadable": "Parts that couldn't be read",
+      "chat": {
+        "title": "Ask about this document",
+        "hint": "Ask a question about the document, for example what a term means or how to take a medicine.",
+        "placeholder": "Type your question",
+        "send": "Send",
+        "thinking": "Thinking…",
+        "urgent": "This may be urgent. Contact a doctor or local emergency services now."
+      },
       "title": "Your document, explained",
       "original": "Original language: {language}",
       "plain": "In plain language",
@@ -286,6 +344,9 @@
       "another": "Translate another"
     },
     "errors": {
+      "network": "No connection. Check your internet and try again.",
+      "session_expired": "Your session expired. Please try again.",
+      "invalid": "That request couldn't be processed. Please check it and try again.",
       "type": "Please upload a JPG, PNG, WebP or PDF file.",
       "size": "That file is larger than {max} MB. Try a smaller photo or PDF.",
       "generic": "We couldn't process that document. Please try again.",

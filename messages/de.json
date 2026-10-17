@@ -8,6 +8,7 @@
     "documentsDescription": "Laden Sie ein ausländisches Rezept, einen Laborbefund oder eine ärztliche Notiz hoch und erhalten Sie eine Übersetzung sowie eine verständliche Erklärung."
   },
   "common": {
+    "copyFailed": "Kopieren nicht möglich!",
     "disclaimer": "WellAbroad ist eine Kommunikationshilfe für medizinische Situationen und kein Diagnosedienst. Wählen Sie im Notfall die lokale Notrufnummer."
   },
   "nav": {
@@ -149,33 +150,11 @@
       "pick": "Wählen Sie Ihr Land, um die lokalen Notrufnummern zu sehen."
     },
     "emergency": {
+      "seeMore": "Mehr Infos anzeigen", "seeLess": "Details ausblenden",
       "title": "Im Notfall jetzt anrufen",
       "callIf": "Rufen Sie sofort an, wenn Sie Folgendes haben",
       "others": "Weitere nützliche Nummern ({country})",
       "source": "Quelle: {source}"
-    },
-    "progress": "Frage {current} von {total}",
-    "back": "Zurück",
-    "next": "Weiter",
-    "review": "Meine Antworten prüfen",
-    "scale": {
-      "low": "Keine Beschwerden",
-      "high": "Schlimmste vorstellbare"
-    },
-    "fields": {
-      "allergies": { "label": "Allergien", "placeholder": "z. B. Penicillin, Erdnüsse" },
-      "meds": { "label": "Aktuelle Medikamente", "placeholder": "Name und Dosis, falls bekannt" },
-      "conditions": { "label": "Bekannte Vorerkrankungen" },
-      "notes": { "label": "Möchten Sie noch etwas ergänzen?" }
-    },
-    "steps": {
-      "area": "Was ist das Hauptproblem?",
-      "start": "Wann hat es begonnen?",
-      "onset": "Hat es plötzlich oder allmählich begonnen?",
-      "sev": "Wie stark ist es auf einer Skala von 0 bis 10?",
-      "pattern": "Ist es dauerhaft oder kommt und geht es?",
-      "assoc": "Weitere Symptome? Wählen Sie alles Zutreffende aus.",
-      "details": "Ein paar Angaben für den Arzt (optional)"
     },
     "warningSigns": [
       "Brustschmerzen oder Druckgefühl in der Brust",
@@ -186,11 +165,39 @@
       "Schwellung von Gesicht oder Hals nach einem Stich, Essen oder Medikament",
       "Gedanken, sich selbst etwas anzutun"
     ],
+    "start": {
+      "title": "Bereiten Sie Ihren Arzttermin vor",
+      "body": "Ich stelle Ihnen ein paar kurze Fragen zu Ihren Beschwerden und erstelle dann eine Zusammenfassung für den Arzt.",
+      "button": "Starten",
+      "privacy": "Dies ist keine Diagnose. Die Zusammenfassung hilft Ihnen, dem Arzt Ihre Beschwerden zu erklären."
+    },
+    "consult": {
+      "question": "Frage {n}",
+      "quick": "Schnellantworten",
+      "placeholder": "Antwort eingeben (oder oben eine auswählen)",
+      "send": "Senden",
+      "skip": "Frage überspringen",
+      "loading": "Wird vorbereitet…"
+    },
+    "urgent": {
+      "generic": "Ihre Antworten könnten auf einen Notfall hindeuten. Rufen Sie die <call>{number}</call> an oder holen Sie sofort medizinische Hilfe."
+    },
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "network": "Keine Verbindung. Prüfen Sie Ihr Internet und versuchen Sie es erneut.",
+      "timeout": "Das dauert zu lange. Bitte versuchen Sie es erneut.",
+      "upstream_error": "Der Dienst ist derzeit nicht erreichbar. Bitte versuchen Sie es gleich noch einmal.",
+      "not_configured": "Der Dienst ist noch nicht eingerichtet.",
+      "session_expired": "Ihre Sitzung ist abgelaufen. Bitte beginnen Sie von vorn.",
+      "invalid": "Diese Antwort konnte nicht verarbeitet werden. Bitte kürzen oder umformulieren.",
+      "unexpected": "Unerwarteter Fehler. Bitte versuchen Sie es erneut."
+    },
     "summary": {
+      "forYou": "In Ihrer Sprache",
+      "skipped": "Übersprungene Fragen: {list}",
       "title": "Ihre Zusammenfassung",
       "introBilingual": "Zeigen Sie dies einem Arzt oder Apotheker. Sie ist auf Englisch und in {language} verfasst.",
       "introSingle": "Zeigen Sie dies einem Arzt oder Apotheker.",
-      "freeText": "Freitext-Antworten werden so angezeigt, wie Sie sie eingegeben haben, und nicht übersetzt.",
       "print": "Drucken oder als PDF speichern",
       "copy": "Text kopieren",
       "copied": "Kopiert",
@@ -205,9 +212,16 @@
       "primary": "Rescue 1122 · Rettungsdienst, Feuerwehr und Rettung",
       "note": "Pakistan hat keine einheitliche landesweite Notrufnummer, und die 1122 wird auf Provinzebene betrieben, daher unterscheidet sich die Abdeckung je nach Region. Die 112 funktioniert möglicherweise nicht zuverlässig. Die Gesprächspartner sprechen eventuell nur wenig Englisch.",
       "contacts": {
-        "edhi": { "label": "Edhi-Rettungsdienst", "note": "Von einer Stiftung betrieben, weit verbreitet" },
-        "police": { "label": "Polizei" },
-        "fire": { "label": "Feuerwehr" }
+        "edhi": {
+          "label": "Edhi-Rettungsdienst",
+          "note": "Von einer Stiftung betrieben, weit verbreitet"
+        },
+        "police": {
+          "label": "Polizei"
+        },
+        "fire": {
+          "label": "Feuerwehr"
+        }
       }
     },
     "US": {
@@ -215,8 +229,14 @@
       "primary": "Polizei, Feuerwehr und Rettungsdienst",
       "note": "Notaufnahmen müssen jeden in einem Notfall behandeln, und die Rechnungen können hoch sein. Fragen Sie bei nicht dringlicher Behandlung nach den Kosten.",
       "contacts": {
-        "crisis": { "label": "Suicide & Crisis Lifeline (Krisentelefon)", "note": "Anruf oder SMS, rund um die Uhr" },
-        "poison": { "label": "Poison Help (Giftnotruf)", "note": "Kostenlos und vertraulich" }
+        "crisis": {
+          "label": "Suicide & Crisis Lifeline (Krisentelefon)",
+          "note": "Anruf oder SMS, rund um die Uhr"
+        },
+        "poison": {
+          "label": "Poison Help (Giftnotruf)",
+          "note": "Kostenlos und vertraulich"
+        }
       }
     },
     "GB": {
@@ -224,9 +244,17 @@
       "primary": "Polizei, Feuerwehr, Rettungsdienst und Küstenwache",
       "note": "Die 999 ist für Notfälle. Bei dringenden Problemen ohne Lebensgefahr nutzen Sie NHS 111 oder ein Urgent Treatment Centre.",
       "contacts": {
-        "e112": { "label": "Verbindet ebenfalls mit den Notdiensten" },
-        "nhs111": { "label": "NHS 111 · dringend, aber nicht lebensbedrohlich", "note": "England, Schottland und Wales" },
-        "samaritans": { "label": "Samaritans", "note": "Kostenlose emotionale Unterstützung, rund um die Uhr" }
+        "e112": {
+          "label": "Verbindet ebenfalls mit den Notdiensten"
+        },
+        "nhs111": {
+          "label": "NHS 111 · dringend, aber nicht lebensbedrohlich",
+          "note": "England, Schottland und Wales"
+        },
+        "samaritans": {
+          "label": "Samaritans",
+          "note": "Kostenlose emotionale Unterstützung, rund um die Uhr"
+        }
       }
     },
     "DE": {
@@ -234,9 +262,17 @@
       "primary": "Rettungsdienst und Feuerwehr",
       "note": "Die 112 ist für lebensbedrohliche Situationen. Rufen Sie die 116 117 bei dringendem medizinischem Bedarf außerhalb der Sprechzeiten an.",
       "contacts": {
-        "onCall": { "label": "Ärztlicher Bereitschaftsdienst · dringend, nicht lebensbedrohlich", "note": "Nur auf Deutsch" },
-        "police": { "label": "Polizei" },
-        "telefonseelsorge": { "label": "Telefonseelsorge", "note": "Kostenlose Krisenhilfe, auf Deutsch" }
+        "onCall": {
+          "label": "Ärztlicher Bereitschaftsdienst · dringend, nicht lebensbedrohlich",
+          "note": "Nur auf Deutsch"
+        },
+        "police": {
+          "label": "Polizei"
+        },
+        "telefonseelsorge": {
+          "label": "Telefonseelsorge",
+          "note": "Kostenlose Krisenhilfe, auf Deutsch"
+        }
       }
     },
     "FR": {
@@ -244,11 +280,23 @@
       "primary": "Europäische Notrufnummer",
       "note": "Die 112 funktioniert überall in Frankreich. Die 15 erreicht bei medizinischen Notfällen direkt den SAMU.",
       "contacts": {
-        "samu": { "label": "SAMU · medizinische Notfälle" },
-        "fire": { "label": "Feuerwehr (Pompiers)" },
-        "police": { "label": "Polizei" },
-        "suicide": { "label": "Nationale Suizidpräventions-Hotline", "note": "Kostenlos, rund um die Uhr" },
-        "sms": { "label": "Notruf per SMS oder Fax", "note": "Für gehörlose und schwerhörige Anrufer" }
+        "samu": {
+          "label": "SAMU · medizinische Notfälle"
+        },
+        "fire": {
+          "label": "Feuerwehr (Pompiers)"
+        },
+        "police": {
+          "label": "Polizei"
+        },
+        "suicide": {
+          "label": "Nationale Suizidpräventions-Hotline",
+          "note": "Kostenlos, rund um die Uhr"
+        },
+        "sms": {
+          "label": "Notruf per SMS oder Fax",
+          "note": "Für gehörlose und schwerhörige Anrufer"
+        }
       }
     }
   },
@@ -270,9 +318,19 @@
       "reading": "Ihr Dokument wird gelesen … das kann bis zu einer Minute dauern.",
       "cancel": "Abbrechen",
       "submit": "Dokument übersetzen",
-      "privacy": "Ihre Datei wird über eine verschlüsselte Verbindung gesendet, um gelesen und übersetzt zu werden. Laden Sie keine Dokumente hoch, die Sie nicht teilen möchten."
+      "privacy": "Ihr Dokument wird sicher übermittelt, um gelesen und übersetzt zu werden, und nach Ende Ihrer Sitzung gelöscht. Laden Sie nur hoch, was Sie bedenkenlos teilen möchten."
     },
     "result": {
+      "extracted": "Im Dokument gefundene Angaben",
+      "unreadable": "Nicht lesbare Stellen",
+      "chat": {
+        "title": "Fragen zu diesem Dokument",
+        "hint": "Stellen Sie eine Frage zum Dokument, zum Beispiel was ein Begriff bedeutet oder wie ein Medikament einzunehmen ist.",
+        "placeholder": "Frage eingeben",
+        "send": "Senden",
+        "thinking": "Wird bearbeitet…",
+        "urgent": "Das könnte dringend sein. Kontaktieren Sie sofort einen Arzt oder den örtlichen Notruf."
+      },
       "title": "Ihr Dokument, erklärt",
       "original": "Originalsprache: {language}",
       "plain": "In einfacher Sprache",
@@ -286,6 +344,9 @@
       "another": "Weiteres Dokument übersetzen"
     },
     "errors": {
+      "network": "Keine Verbindung. Prüfen Sie Ihr Internet und versuchen Sie es erneut.",
+      "session_expired": "Ihre Sitzung ist abgelaufen. Bitte versuchen Sie es erneut.",
+      "invalid": "Diese Anfrage konnte nicht verarbeitet werden. Bitte prüfen Sie sie und versuchen Sie es erneut.",
       "type": "Bitte laden Sie eine JPG-, PNG-, WebP- oder PDF-Datei hoch.",
       "size": "Diese Datei ist größer als {max} MB. Versuchen Sie ein kleineres Foto oder PDF.",
       "generic": "Wir konnten dieses Dokument nicht verarbeiten. Bitte versuchen Sie es erneut.",

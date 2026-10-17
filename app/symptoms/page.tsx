@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { FinalCta } from "@/components/landing-page-section/FinalCTA-Section";
-import { Privacy } from "@/components/landing-page-section/PrivacySection";
+import { FinalCta } from "@/components/landing-page/FinalCTA-Section";
+import { Privacy } from "@/components/landing-page/PrivacySection";
 import { ServiceSection } from "@/components/ServiceSection";
 
 async function DescribeSymptomsPage() {

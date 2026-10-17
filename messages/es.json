@@ -8,6 +8,7 @@
     "documentsDescription": "Sube una receta extranjera, un informe de laboratorio o una nota médica para obtener una traducción y una explicación clara en lenguaje sencillo."
   },
   "common": {
+    "copyFailed": "¡No se pudo copiar!",
     "disclaimer": "WellAbroad es una ayuda para la comunicación médica, no un servicio de diagnóstico. En una emergencia, llama a tu número de emergencias local."
   },
   "nav": {
@@ -149,33 +150,11 @@
       "pick": "Elige tu país para ver los números de emergencia locales."
     },
     "emergency": {
+      "seeMore": "Ver más información", "seeLess": "Ocultar detalles",
       "title": "En una emergencia, llama ahora",
       "callIf": "Llama de inmediato si tienes",
       "others": "Otros números útiles ({country})",
       "source": "Fuente: {source}"
-    },
-    "progress": "Pregunta {current} de {total}",
-    "back": "Atrás",
-    "next": "Siguiente",
-    "review": "Revisar mis respuestas",
-    "scale": {
-      "low": "Sin molestias",
-      "high": "Lo peor imaginable"
-    },
-    "fields": {
-      "allergies": { "label": "Alergias", "placeholder": "p. ej., penicilina, cacahuetes" },
-      "meds": { "label": "Medicación actual", "placeholder": "Nombre y dosis, si los conoces" },
-      "conditions": { "label": "Problemas de salud conocidos" },
-      "notes": { "label": "¿Algo más que añadir?" }
-    },
-    "steps": {
-      "area": "¿Cuál es el problema principal?",
-      "start": "¿Cuándo empezó?",
-      "onset": "¿Empezó de repente o poco a poco?",
-      "sev": "¿Qué intensidad tiene, de 0 a 10?",
-      "pattern": "¿Es constante o va y viene?",
-      "assoc": "¿Algún otro síntoma? Elige todos los que correspondan.",
-      "details": "Algunos datos para el médico (opcional)"
     },
     "warningSigns": [
       "Dolor u opresión en el pecho",
@@ -186,11 +165,39 @@
       "Hinchazón de la cara o la garganta tras una picadura, un alimento o un medicamento",
       "Pensamientos de hacerte daño"
     ],
+    "start": {
+      "title": "Prepara tu consulta",
+      "body": "Te haré unas preguntas breves sobre tus síntomas y luego prepararé un resumen que puedes mostrar al médico.",
+      "button": "Empezar",
+      "privacy": "Esto no es un diagnóstico. El resumen te ayuda a explicar tus síntomas a un médico."
+    },
+    "consult": {
+      "question": "Pregunta {n}",
+      "quick": "Respuestas rápidas",
+      "placeholder": "Escribe tu respuesta (o elige una arriba)",
+      "send": "Enviar",
+      "skip": "Omitir esta pregunta",
+      "loading": "Preparando…"
+    },
+    "urgent": {
+      "generic": "Tus respuestas podrían indicar algo urgente. Llama al <call>{number}</call> o busca atención médica ahora."
+    },
+    "errors": {
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+      "timeout": "Esto está tardando demasiado. Inténtalo de nuevo.",
+      "upstream_error": "El servicio no está disponible ahora. Inténtalo de nuevo en un momento.",
+      "not_configured": "El servicio aún no está configurado.",
+      "session_expired": "Tu sesión ha caducado. Empieza de nuevo.",
+      "invalid": "No se pudo procesar esa respuesta. Acórtala o reformúlala.",
+      "unexpected": "Error inesperado. Inténtalo de nuevo."
+    },
     "summary": {
+      "forYou": "En tu idioma",
+      "skipped": "Preguntas omitidas: {list}",
       "title": "Tu resumen",
       "introBilingual": "Muéstraselo a un médico o farmacéutico. Está en inglés y en {language}.",
       "introSingle": "Muéstraselo a un médico o farmacéutico.",
-      "freeText": "Las respuestas de texto libre se muestran tal como las escribiste y no se traducen.",
       "print": "Imprimir o guardar como PDF",
       "copy": "Copiar texto",
       "copied": "Copiado",
@@ -205,9 +212,16 @@
       "primary": "Rescue 1122 · ambulancia, bomberos y rescate",
       "note": "Pakistán no tiene un único número de emergencias nacional, y el 1122 se gestiona por provincias, así que la cobertura varía según la zona. Es posible que el 112 no funcione de forma fiable. Los operadores pueden hablar poco inglés.",
       "contacts": {
-        "edhi": { "label": "Ambulancia Edhi", "note": "Gestionada por una fundación benéfica, muy extendida" },
-        "police": { "label": "Policía" },
-        "fire": { "label": "Bomberos" }
+        "edhi": {
+          "label": "Ambulancia Edhi",
+          "note": "Gestionada por una fundación benéfica, muy extendida"
+        },
+        "police": {
+          "label": "Policía"
+        },
+        "fire": {
+          "label": "Bomberos"
+        }
       }
     },
     "US": {
@@ -215,8 +229,14 @@
       "primary": "Policía, bomberos y ambulancia",
       "note": "Las salas de urgencias deben atender a cualquier persona en una emergencia, y las facturas pueden ser altas. Pregunta por los costes en la atención no urgente.",
       "contacts": {
-        "crisis": { "label": "Línea de ayuda en crisis y prevención del suicidio (Suicide & Crisis Lifeline)", "note": "Llamada o SMS, 24 horas" },
-        "poison": { "label": "Centro de toxicología (Poison Help)", "note": "Gratuito y confidencial" }
+        "crisis": {
+          "label": "Línea de ayuda en crisis y prevención del suicidio (Suicide & Crisis Lifeline)",
+          "note": "Llamada o SMS, 24 horas"
+        },
+        "poison": {
+          "label": "Centro de toxicología (Poison Help)",
+          "note": "Gratuito y confidencial"
+        }
       }
     },
     "GB": {
@@ -224,9 +244,17 @@
       "primary": "Policía, bomberos, ambulancia y guardacostas",
       "note": "El 999 es para emergencias. Para problemas urgentes que no ponen en peligro la vida, usa NHS 111 o un centro de atención urgente.",
       "contacts": {
-        "e112": { "label": "También conecta con los servicios de emergencia" },
-        "nhs111": { "label": "NHS 111 · urgente, sin peligro vital", "note": "Inglaterra, Escocia y Gales" },
-        "samaritans": { "label": "Samaritans", "note": "Apoyo emocional gratuito, 24 horas" }
+        "e112": {
+          "label": "También conecta con los servicios de emergencia"
+        },
+        "nhs111": {
+          "label": "NHS 111 · urgente, sin peligro vital",
+          "note": "Inglaterra, Escocia y Gales"
+        },
+        "samaritans": {
+          "label": "Samaritans",
+          "note": "Apoyo emocional gratuito, 24 horas"
+        }
       }
     },
     "DE": {
@@ -234,9 +262,17 @@
       "primary": "Ambulancia y bomberos",
       "note": "El 112 es para situaciones que ponen en peligro la vida. Llama al 116 117 para necesidades médicas urgentes fuera del horario de consulta.",
       "contacts": {
-        "onCall": { "label": "Médico de guardia · urgente, sin peligro vital", "note": "Solo atiende en alemán" },
-        "police": { "label": "Policía" },
-        "telefonseelsorge": { "label": "Telefonseelsorge", "note": "Apoyo gratuito en crisis, en alemán" }
+        "onCall": {
+          "label": "Médico de guardia · urgente, sin peligro vital",
+          "note": "Solo atiende en alemán"
+        },
+        "police": {
+          "label": "Policía"
+        },
+        "telefonseelsorge": {
+          "label": "Telefonseelsorge",
+          "note": "Apoyo gratuito en crisis, en alemán"
+        }
       }
     },
     "FR": {
@@ -244,11 +280,23 @@
       "primary": "Número europeo de emergencias",
       "note": "El 112 funciona en toda Francia. El 15 conecta directamente con el SAMU para emergencias médicas.",
       "contacts": {
-        "samu": { "label": "SAMU · emergencias médicas" },
-        "fire": { "label": "Bomberos (pompiers)" },
-        "police": { "label": "Policía" },
-        "suicide": { "label": "Línea de prevención del suicidio", "note": "Gratuita, 24 horas" },
-        "sms": { "label": "Emergencias por SMS o fax", "note": "Para personas sordas o con dificultades auditivas" }
+        "samu": {
+          "label": "SAMU · emergencias médicas"
+        },
+        "fire": {
+          "label": "Bomberos (pompiers)"
+        },
+        "police": {
+          "label": "Policía"
+        },
+        "suicide": {
+          "label": "Línea de prevención del suicidio",
+          "note": "Gratuita, 24 horas"
+        },
+        "sms": {
+          "label": "Emergencias por SMS o fax",
+          "note": "Para personas sordas o con dificultades auditivas"
+        }
       }
     }
   },
@@ -270,9 +318,19 @@
       "reading": "Leyendo tu documento… puede tardar hasta un minuto.",
       "cancel": "Cancelar",
       "submit": "Traducir documento",
-      "privacy": "Tu archivo se envía a través de una conexión cifrada para ser leído y traducido. No subas documentos que no te sientas cómodo compartiendo."
+      "privacy": "Tu documento se envía de forma segura para ser leído y traducido, y se elimina cuando termina tu sesión. Sube solo lo que te sientas cómodo compartiendo."
     },
     "result": {
+      "extracted": "Datos encontrados en el documento",
+      "unreadable": "Partes que no se pudieron leer",
+      "chat": {
+        "title": "Pregunta sobre este documento",
+        "hint": "Haz una pregunta sobre el documento, por ejemplo qué significa un término o cómo tomar un medicamento.",
+        "placeholder": "Escribe tu pregunta",
+        "send": "Enviar",
+        "thinking": "Pensando…",
+        "urgent": "Esto podría ser urgente. Contacta a un médico o a los servicios de emergencia locales ahora."
+      },
       "title": "Tu documento, explicado",
       "original": "Idioma original: {language}",
       "plain": "En lenguaje sencillo",
@@ -286,6 +344,9 @@
       "another": "Traducir otro"
     },
     "errors": {
+      "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+      "session_expired": "Tu sesión ha caducado. Inténtalo de nuevo.",
+      "invalid": "No se pudo procesar la solicitud. Revísala e inténtalo de nuevo.",
       "type": "Sube un archivo JPG, PNG, WebP o PDF.",
       "size": "Ese archivo supera los {max} MB. Prueba con una foto o un PDF más pequeño.",
       "generic": "No hemos podido procesar ese documento. Inténtalo de nuevo.",

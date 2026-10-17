@@ -25,7 +25,7 @@ export async function Hero() {
 
       <div className="relative z-10 mx-auto flex flex-col items-start gap-5 px-6 py-8 md:items-center md:gap-6 md:py-12 md:text-center">
         <h1
-          className={`${idiqlat.className} text-[40px] font-semibold leading-tight md:text-[64px]`}
+          className={`${idiqlat.className} text-[28px] font-semibold leading-tight md:text-[64px]`}
         >
           {t("title")}
         </h1>

@@ -20,7 +20,7 @@ export async function Problem() {
           <p className="mx-auto mt-4 max-w-5xl text-lg md:text-xl">{t("subtitle")}</p>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:gap-14 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:gap-14 lg:grid-cols-3">
           {ids.map((id) => (
             <Card key={id} className="overflow-hidden p-4 rounded-3xl shadow-xl">
               <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center text-sm italic md:text-[15px]">

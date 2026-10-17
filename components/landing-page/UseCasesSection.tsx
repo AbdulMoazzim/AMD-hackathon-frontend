@@ -25,7 +25,7 @@ export async function UseCases() {
           <p className="mt-4 text-lg md:text-xl">{t("subtitle")}</p>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:gap-14 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:gap-14 lg:grid-cols-3">
           {items.map((u, i) => (
             <Link key={u.id} href={u.href} className="group">
               <Card className="flex h-full flex-col justify-between overflow-hidden p-0 shadow-2xl">
