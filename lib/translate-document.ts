@@ -1,5 +1,6 @@
 export type TargetLang = "en" | "ur" | "fr" | "de";
 
+// Language names are shown in their own language on purpose.
 export const TARGET_LANGS: { id: TargetLang; label: string }[] = [
   { id: "en", label: "English" },
   { id: "ur", label: "اردو (Urdu)" },
@@ -27,13 +28,18 @@ export type DocumentResult = {
   warnings: string[];
 };
 
-export function validateFile(file: File): string | null {
-  if (!ACCEPTED_TYPES.includes(file.type)) return "Please upload a JPG, PNG, WebP or PDF file.";
-  if (file.size > MAX_MB * 1024 * 1024) return `That file is larger than ${MAX_MB} MB. Try a smaller photo or PDF.`;
+export class ApiError extends Error {
+  constructor(public code: string) {
+    super(code);
+  }
+}
+
+export function validateFile(file: File): "type" | "size" | null {
+  if (!ACCEPTED_TYPES.includes(file.type)) return "type";
+  if (file.size > MAX_MB * 1024 * 1024) return "size";
   return null;
 }
 
-/* ------------------------------ request ------------------------------ */
 
 export async function translateDocument(
   file: File,
@@ -53,19 +59,15 @@ export async function translateDocument(
     /* non-JSON body */
   }
 
-  if (!res.ok) {
-    const msg = str(obj(json).message);
-    throw new Error(msg ?? "We couldn't process that document. Please try again.");
-  }
+  if (!res.ok) throw new ApiError(str(obj(json).code) ?? "generic");
 
   const result = normalize(json);
   if (!result.translation && !result.summary && result.medications.length === 0) {
-    throw new Error("We couldn't find any readable text in that document. Try a clearer photo.");
+    throw new ApiError("empty");
   }
   return result;
 }
 
-/* ------------------------------ response mapping ------------------------------ */
 
 const obj = (v: unknown): Record<string, unknown> =>
   typeof v === "object" && v !== null ? (v as Record<string, unknown>) : {};
@@ -85,7 +87,7 @@ function normalize(raw: unknown): DocumentResult {
       ? meds.map((m) => {
           const x = obj(m);
           return {
-            name: str(x.name) ?? "Unnamed item",
+            name: str(x.name) ?? "—",
             dosage: str(x.dosage),
             frequency: str(x.frequency),
             instructions: str(x.instructions),

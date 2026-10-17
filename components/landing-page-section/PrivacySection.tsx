@@ -1,8 +1,11 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { Separator } from "../ui/separator";
 import { idiqlat } from "@/lib/utils";
 
-export function Privacy() {
+export async function Privacy() {
+  const t = await getTranslations("privacy");
+
   return (
     <section id="privacy" className="bg-[#D2FFF5] px-6 md:pt-32 md:pb-40 pt-26 pb-32">
       <div className="flex flex-col items-center text-center">
@@ -10,21 +13,11 @@ export function Privacy() {
         <h2
           className={`${idiqlat.className} mx-auto mt-12 max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
         >
-          Health data that never leaves your hands.
+          {t("title")}
         </h2>
-        <p className="mx-auto mt-8 max-w-5xl text-base italic leading-relaxed">
-          We believe medical privacy shouldn&apos;t require technical expertise
-          or blind trust. WellAbroad is built without accounts, without cloud
-          retention, and without diagnostic pretensions. Your symptoms and
-          prescriptions are deciphered locally in your browser, helping you
-          communicate clearly in a foreign clinic; and vanishing completely the
-          moment your conversation ends.
-        </p>
+        <p className="mx-auto mt-8 max-w-5xl text-base italic leading-relaxed">{t("body")}</p>
         <Separator className="my-10 max-w-lg bg-[#b3b4af]" />
-        <p className="text-xs text-muted-foreground md:text-sm">
-          Designed for travelers and expats · Zero persistent data · Ephemeral
-          by default
-        </p>
+        <p className="text-xs text-muted-foreground md:text-sm">{t("tagline")}</p>
       </div>
     </section>
   );

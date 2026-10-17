@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { DocumentTranslator } from "@/components/DocumentTranslator";
 
-export const metadata: Metadata = {
-  title: "Understand your document",
-  description:
-    "Upload a foreign prescription, lab report or medical note to get a translation and a clear, plain-language explanation.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("documentsTitle"), description: t("documentsDescription") };
+}
 
 export default function DocumentsPage() {
   return (
-      <main>
-        <DocumentTranslator />
-      </main>
+    <main>
+      <DocumentTranslator />
+    </main>
   );
 }

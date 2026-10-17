@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,14 +22,12 @@ import {
   LANG_NAME,
   MISC,
   OPTIONS,
-  WARNING_SIGNS,
   type Country,
   type CountryId,
   type Lang,
   type Opt,
   type T,
 } from "../lib/symptoms-data";
-
 
 type Answers = {
   area?: string;
@@ -45,33 +44,37 @@ type Answers = {
 
 const EMPTY: Answers = { assoc: [], allergies: "", meds: "", conditions: "", notes: "" };
 
+// `id` doubles as the message key: symptoms.steps.<id>
 type Step =
-  | { id: "area" | "start" | "onset" | "pattern"; q: string; kind: "single"; options: Opt[]; required?: boolean }
-  | { id: "sev"; q: string; kind: "scale" }
-  | { id: "assoc"; q: string; kind: "multi"; options: Opt[] }
-  | { id: "details"; q: string; kind: "details" };
+  | { id: "area" | "start" | "onset" | "pattern"; kind: "single"; options: Opt[]; required?: boolean }
+  | { id: "sev"; kind: "scale" }
+  | { id: "assoc"; kind: "multi"; options: Opt[] }
+  | { id: "details"; kind: "details" };
 
 const STEPS: Step[] = [
-  { id: "area", q: "What is the main problem?", kind: "single", options: OPTIONS.area, required: true },
-  { id: "start", q: "When did it start?", kind: "single", options: OPTIONS.start },
-  { id: "onset", q: "Did it start suddenly or gradually?", kind: "single", options: OPTIONS.onset },
-  { id: "sev", q: "How strong is it, from 0 to 10?", kind: "scale" },
-  { id: "pattern", q: "Is it constant, or does it come and go?", kind: "single", options: OPTIONS.pattern },
-  { id: "assoc", q: "Any other symptoms? Choose all that apply.", kind: "multi", options: OPTIONS.assoc },
-  { id: "details", q: "A few details for the doctor (optional)", kind: "details" },
+  { id: "area", kind: "single", options: OPTIONS.area, required: true },
+  { id: "start", kind: "single", options: OPTIONS.start },
+  { id: "onset", kind: "single", options: OPTIONS.onset },
+  { id: "sev", kind: "scale" },
+  { id: "pattern", kind: "single", options: OPTIONS.pattern },
+  { id: "assoc", kind: "multi", options: OPTIONS.assoc },
+  { id: "details", kind: "details" },
 ];
 
 /* ------------------------------ helpers ------------------------------ */
 
+const ALL_LANGS: Lang[] = ["en", "fr", "de", "ur"];
 const same = (v: string): T => ({ en: v, fr: v, de: v, ur: v });
 const find = (list: Opt[], id?: string) => list.find((x) => x.id === id)?.t;
 
+// Rows for the doctor-facing summary: always English + the destination language,
+// whatever language the interface is in.
 function buildRows(a: Answers): { label: T; value: T }[] {
   const un = MISC.unanswered;
   const text = (v: string) => (v.trim() ? same(v.trim()) : un);
   const assocValue: T = a.assoc.length
     ? (Object.fromEntries(
-        (["en", "fr", "de", "ur"] as Lang[]).map((l) => [
+        ALL_LANGS.map((l) => [
           l,
           a.assoc
             .map((id) => find(OPTIONS.assoc, id)?.[l])
@@ -83,9 +86,7 @@ function buildRows(a: Answers): { label: T; value: T }[] {
   const sevValue: T =
     a.sev === undefined
       ? un
-      : (Object.fromEntries(
-          (["en", "fr", "de", "ur"] as Lang[]).map((l) => [l, MISC.sev[l].replace("{n}", String(a.sev))]),
-        ) as T);
+      : (Object.fromEntries(ALL_LANGS.map((l) => [l, MISC.sev[l].replace("{n}", String(a.sev))])) as T);
 
   return [
     { label: LABELS.area, value: find(OPTIONS.area, a.area) ?? un },
@@ -118,21 +119,27 @@ function CallLink({ tel, children, className = "" }: { tel: string; children: Re
 }
 
 function EmergencyPanel({ country }: { country: Country | null }) {
+  const t = useTranslations("symptoms");
+  const tc = useTranslations("countries");
+
   if (!country) {
     return (
       <p className="rounded-2xl border border-dashed p-6 text-center text-sm md:text-[15px]">
-        Choose your country to see local emergency numbers.
+        {t("where.pick")}
       </p>
     );
   }
+
+  const warningSigns = t.raw("warningSigns") as string[];
+
   return (
     <div className="overflow-hidden rounded-2xl border border-red-600/40 bg-red-50">
       <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-1 size-5 shrink-0 text-red-700" aria-hidden />
           <div>
-            <h3 className={`${h3} text-red-900`}>In an emergency, call now</h3>
-            <p className="mt-1 text-sm text-red-900/80 md:text-[15px]">{country.primary.label}</p>
+            <h3 className={`${h3} text-red-900`}>{t("emergency.title")}</h3>
+            <p className="mt-1 text-sm text-red-900/80 md:text-[15px]">{tc(`${country.id}.primary`)}</p>
           </div>
         </div>
         <Button
@@ -147,11 +154,9 @@ function EmergencyPanel({ country }: { country: Country | null }) {
 
       <div className="grid gap-6 border-t border-red-600/20 bg-white p-6 md:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide md:text-sm">
-            Call immediately if you have
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wide md:text-sm">{t("emergency.callIf")}</p>
           <ul className="mt-3 space-y-2 text-sm md:text-[15px]">
-            {WARNING_SIGNS.map((w) => (
+            {warningSigns.map((w) => (
               <li key={w} className="flex gap-2">
                 <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-red-700" />
                 {w}
@@ -162,28 +167,32 @@ function EmergencyPanel({ country }: { country: Country | null }) {
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide md:text-sm">
-            Other useful numbers in {country.name}
+            {t("emergency.others", { country: tc(`${country.id}.name`) })}
           </p>
           <ul className="mt-3 space-y-3 text-sm md:text-[15px]">
             {country.contacts.map((c) => (
-              <li key={c.number + c.label}>
+              <li key={country.id + c.id}>
                 <CallLink tel={c.tel}>
                   <Phone className="size-4" aria-hidden />
                   {c.number}
                 </CallLink>
-                <span className="ml-2">{c.label}</span>
-                {c.note && <span className="block text-xs text-muted-foreground md:text-sm">{c.note}</span>}
+                <span className="ms-2">{tc(`${country.id}.contacts.${c.id}.label`)}</span>
+                {c.hasNote && (
+                  <span className="block text-xs text-muted-foreground md:text-sm">
+                    {tc(`${country.id}.contacts.${c.id}.note`)}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-muted-foreground md:text-sm">{country.note}</p>
+          <p className="mt-4 text-xs text-muted-foreground md:text-sm">{tc(`${country.id}.note`)}</p>
           <a
             href={country.source.href}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2 inline-flex items-center gap-1 text-xs underline-offset-4 hover:underline md:text-sm"
           >
-            Source: {country.source.label}
+            {t("emergency.source", { source: country.source.label })}
             <ExternalLink className="size-3" aria-hidden />
           </a>
         </div>
@@ -232,6 +241,7 @@ function Summary({
   country: Country;
   onRestart: () => void;
 }) {
+  const t = useTranslations("symptoms");
   const [copied, setCopied] = useState(false);
   const rows = buildRows(answers);
   const lang = country.lang;
@@ -259,23 +269,23 @@ function Summary({
         >
           <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden />
           <p>
-            Some of your answers may need prompt medical attention. If you feel worse, or you are
-            unsure, call{" "}
-            <CallLink tel={country.primary.tel} className="text-red-900">
-              {country.primary.number}
-            </CallLink>{" "}
-            now instead of waiting.
+            {t.rich("summary.urgent", {
+              number: country.primary.number,
+              call: (chunks) => (
+                <CallLink tel={country.primary.tel} className="text-red-900">
+                  {chunks}
+                </CallLink>
+              ),
+            })}
           </p>
         </div>
       )}
 
       <div>
-        <h2 className={h2}>Your summary</h2>
+        <h2 className={h2}>{t("summary.title")}</h2>
         <p className="mt-2 text-sm md:text-[15px] print:hidden">
-          {bilingual
-            ? `Show this to a doctor or pharmacist. It is in English and ${LANG_NAME[lang]}.`
-            : "Show this to a doctor or pharmacist."}{" "}
-          Free-text answers are shown as you typed them and are not translated.
+          {bilingual ? t("summary.introBilingual", { language: LANG_NAME[lang] }) : t("summary.introSingle")}{" "}
+          {t("summary.freeText")}
         </p>
       </div>
 
@@ -285,21 +295,23 @@ function Summary({
             bilingual ? "grid-cols-2" : "grid-cols-1"
           }`}
         >
-          <div className="px-4 py-3">English</div>
+          <div className="px-4 py-3" lang="en">
+            {LANG_NAME.en}
+          </div>
           {bilingual && (
-            <div className="border-l px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
+            <div className="border-s px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
               {LANG_NAME[lang]}
             </div>
           )}
         </div>
         {rows.map((r) => (
           <div key={r.label.en} className={`grid border-t ${bilingual ? "grid-cols-2" : "grid-cols-1"}`}>
-            <div className="px-4 py-3">
+            <div className="px-4 py-3" lang="en">
               <p className="text-xs text-muted-foreground md:text-sm">{r.label.en}</p>
               <p className="text-base">{r.value.en}</p>
             </div>
             {bilingual && (
-              <div className="border-l px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
+              <div className="border-s px-4 py-3" dir={lang === "ur" ? "rtl" : "ltr"} lang={lang}>
                 <p className="text-xs text-muted-foreground md:text-sm">{r.label[lang]}</p>
                 <p className="text-base">{r.value[lang]}</p>
               </div>
@@ -310,14 +322,14 @@ function Summary({
 
       <div className="flex flex-col gap-3 md:flex-row print:hidden">
         <Button onClick={() => window.print()} className="h-12 gap-2 px-6 text-[15px] md:text-base">
-          <Printer className="size-4" aria-hidden /> Print or save as PDF
+          <Printer className="size-4" aria-hidden /> {t("summary.print")}
         </Button>
         <Button variant="outline" onClick={copy} className="h-12 gap-2 px-6 text-[15px] md:text-base">
           {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-          {copied ? "Copied" : "Copy text"}
+          {copied ? t("summary.copied") : t("summary.copy")}
         </Button>
         <Button variant="ghost" onClick={onRestart} className="h-12 gap-2 px-6 text-[15px] md:text-base">
-          <RotateCcw className="size-4" aria-hidden /> Start over
+          <RotateCcw className="size-4" aria-hidden /> {t("summary.restart")}
         </Button>
       </div>
     </div>
@@ -327,6 +339,11 @@ function Summary({
 /* ------------------------------ main ------------------------------ */
 
 export function SymptomsExperience() {
+  const t = useTranslations("symptoms");
+  const tc = useTranslations("countries");
+  const common = useTranslations("common");
+  const ui = useLocale() as Lang; // language used for option labels in the questionnaire
+
   const [countryId, setCountryId] = useState<CountryId | null>(null);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>(EMPTY);
@@ -353,30 +370,25 @@ export function SymptomsExperience() {
   const canNext = !(current && current.kind === "single" && current.required && !answers[current.id]);
 
   return (
-    <section className="px-4 py-6 md:px-14 md:py-10 print:p-0 md:mb-40">
+    <section className="px-4 py-6 md:px-14 md:py-10 print:p-0 md:mb-20">
       <div className="mx-auto max-w-6xl">
         {/* banner */}
-        <div className="relative flex h-56 items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center md:h-64 print:hidden">
+        <div className="relative flex items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center h-80 print:hidden">
           <Image src="/background.svg" alt="" fill priority sizes="100vw" className="object-cover" aria-hidden />
           <div className="relative z-10 mx-auto max-w-2xl">
             <h1 className={`${idiqlat.className} text-[30px] font-semibold leading-tight md:text-[40px]`}>
-              Be understood anywhere.
+              {t("banner.title")}
             </h1>
-            <p className="mt-2 text-base md:text-lg">
-              A 2-minute guided intake that turns how you feel into clear, local-language words for
-              doctors and pharmacies abroad.
-            </p>
+            <p className="mt-2 text-base md:text-lg">{t("banner.subtitle")}</p>
           </div>
         </div>
 
         <div className="space-y-12 rounded-b-3xl bg-white px-6 py-10 shadow-lg md:px-10 md:py-14 print:p-0 print:shadow-none">
           {/* country */}
           <div className="print:hidden">
-            <h2 className={h2}>Where are you?</h2>
-            <p className="mt-2 text-base">
-              We use this to show the right emergency numbers and to translate your summary.
-            </p>
-            <div role="group" aria-label="Country" className="mt-5 flex flex-wrap gap-3">
+            <h2 className={h2}>{t("where.title")}</h2>
+            <p className="mt-2 text-base">{t("where.body")}</p>
+            <div role="group" aria-label={t("where.group")} className="mt-5 flex flex-wrap gap-3">
               {COUNTRIES.map((c) => (
                 <Button
                   key={c.id}
@@ -385,7 +397,7 @@ export function SymptomsExperience() {
                   onClick={() => setCountryId(c.id)}
                   className="h-11 px-5 text-[15px] md:text-base"
                 >
-                  {c.name}
+                  {tc(`${c.id}.name`)}
                 </Button>
               ))}
             </div>
@@ -403,9 +415,7 @@ export function SymptomsExperience() {
               ) : (
                 <div className="mx-auto max-w-2xl print:hidden">
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span>
-                      Question {step + 1} of {STEPS.length}
-                    </span>
+                    <span>{t("progress", { current: step + 1, total: STEPS.length })}</span>
                   </div>
                   <div className="mt-2 h-1.5 rounded-full bg-muted" aria-hidden>
                     <div
@@ -414,7 +424,7 @@ export function SymptomsExperience() {
                     />
                   </div>
 
-                  <h2 className={`${h2} mt-8`}>{current.q}</h2>
+                  <h2 className={`${h2} mt-8`}>{t(`steps.${current.id}`)}</h2>
 
                   <div className="mt-6">
                     {current.kind === "single" && (
@@ -425,7 +435,7 @@ export function SymptomsExperience() {
                             selected={answers[current.id] === opt.id}
                             onClick={() => set(current.id, opt.id)}
                           >
-                            {opt.t.en}
+                            {opt.t[ui]}
                           </Tile>
                         ))}
                       </div>
@@ -446,8 +456,8 @@ export function SymptomsExperience() {
                           ))}
                         </div>
                         <div className="mt-2 flex justify-between text-xs text-muted-foreground md:text-sm">
-                          <span>No discomfort</span>
-                          <span>Worst imaginable</span>
+                          <span>{t("scale.low")}</span>
+                          <span>{t("scale.high")}</span>
                         </div>
                       </div>
                     )}
@@ -456,7 +466,7 @@ export function SymptomsExperience() {
                       <div className="grid gap-3 md:grid-cols-2">
                         {current.options.map((opt) => (
                           <Tile key={opt.id} selected={answers.assoc.includes(opt.id)} onClick={() => toggleAssoc(opt.id)}>
-                            {opt.t.en}
+                            {opt.t[ui]}
                           </Tile>
                         ))}
                       </div>
@@ -464,25 +474,19 @@ export function SymptomsExperience() {
 
                     {current.kind === "details" && (
                       <div className="space-y-4">
-                        {(
-                          [
-                            ["allergies", "Allergies", "e.g. penicillin, peanuts"],
-                            ["meds", "Medication right now", "Name and dose if you know it"],
-                            ["conditions", "Known health conditions", ""],
-                          ] as const
-                        ).map(([key, label, ph]) => (
+                        {(["allergies", "meds", "conditions"] as const).map((key) => (
                           <label key={key} className="block">
-                            <span className="text-sm md:text-[15px]">{label}</span>
+                            <span className="text-sm md:text-[15px]">{t(`fields.${key}.label`)}</span>
                             <input
                               className={`${field} mt-1`}
                               value={answers[key]}
-                              placeholder={ph}
+                              placeholder={key === "conditions" ? undefined : t(`fields.${key}.placeholder`)}
                               onChange={(e) => set(key, e.target.value)}
                             />
                           </label>
                         ))}
                         <label className="block">
-                          <span className="text-sm md:text-[15px]">Anything else to add?</span>
+                          <span className="text-sm md:text-[15px]">{t("fields.notes.label")}</span>
                           <textarea
                             className={`${field} mt-1 min-h-24`}
                             value={answers.notes}
@@ -500,14 +504,14 @@ export function SymptomsExperience() {
                       onClick={() => setStep((s) => s - 1)}
                       className="h-12 gap-2 px-5 text-[15px] md:text-base"
                     >
-                      <ArrowLeft className="size-4" aria-hidden /> Back
+                      <ArrowLeft className="size-4" aria-hidden /> {t("back")}
                     </Button>
                     <Button
                       disabled={!canNext}
                       onClick={() => setStep((s) => s + 1)}
                       className="h-12 gap-2 px-8 text-[15px] md:text-base"
                     >
-                      {step === STEPS.length - 1 ? "Review my answers" : "Next"}
+                      {step === STEPS.length - 1 ? t("review") : t("next")}
                       <ArrowRight className="size-4" aria-hidden />
                     </Button>
                   </div>
@@ -518,10 +522,7 @@ export function SymptomsExperience() {
         </div>
 
         <div className="mt-6 flex flex-col gap-2 text-xs italic md:flex-row md:justify-between print:mt-4">
-          <p>
-            WellAbroad is a medical communication aid, not a diagnostic service. In an emergency, call{" "}
-            {country ? country.primary.number : "your local emergency number"}.
-          </p>
+          <p>{country ? t("disclaimerWith", { number: country.primary.number }) : common("disclaimer")}</p>
           <p>© 2026 WellAbroad</p>
         </div>
       </div>

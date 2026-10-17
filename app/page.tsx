@@ -1,3 +1,4 @@
+import { Footer } from "@/components/Footer";
 import { FinalCta } from "@/components/landing-page-section/FinalCTA-Section";
 import { Hero } from "@/components/landing-page-section/HeroSection";
 import { HowItWorks } from "@/components/landing-page-section/HowItWorksSection";
@@ -7,6 +8,7 @@ import { UseCases } from "@/components/landing-page-section/UseCasesSection";
 
 export default function HomePage() {
   return (
+    <>
       <main >
         <Hero />
         <Problem />
@@ -15,5 +17,7 @@ export default function HomePage() {
         <Privacy />
         <FinalCta />
       </main>
+      <Footer />
+    </>
   );
 }

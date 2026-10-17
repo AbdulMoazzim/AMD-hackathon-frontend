@@ -1,3 +1,7 @@
+// app/api/translate-document/route.ts
+// Thin proxy so the backend URL / key never reach the browser.
+// Errors return a `code`; the client shows the translated text for it.
+// .env.local:  TRANSLATE_API_URL=https://your-backend/translate   TRANSLATE_API_KEY=optional
 import { NextResponse } from "next/server";
 
 export const maxDuration = 60;
@@ -5,29 +9,23 @@ export const maxDuration = 60;
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
+const fail = (code: string, status: number) => NextResponse.json({ code }, { status });
+
 export async function POST(req: Request) {
   const url = process.env.TRANSLATE_API_URL;
-  if (!url) {
-    return NextResponse.json({ message: "The translation service is not configured." }, { status: 500 });
-  }
+  if (!url) return fail("not_configured", 500);
 
   let form: FormData;
   try {
     form = await req.formData();
   } catch {
-    return NextResponse.json({ message: "Invalid upload." }, { status: 400 });
+    return fail("invalid_upload", 400);
   }
 
   const file = form.get("file");
-  if (!(file instanceof File)) {
-    return NextResponse.json({ message: "No file was uploaded." }, { status: 400 });
-  }
-  if (!ALLOWED.includes(file.type)) {
-    return NextResponse.json({ message: "Unsupported file type." }, { status: 415 });
-  }
-  if (file.size > MAX_BYTES) {
-    return NextResponse.json({ message: "That file is too large." }, { status: 413 });
-  }
+  if (!(file instanceof File)) return fail("no_file", 400);
+  if (!ALLOWED.includes(file.type)) return fail("unsupported_type", 415);
+  if (file.size > MAX_BYTES) return fail("too_large", 413);
 
   try {
     const upstream = await fetch(url, {
@@ -39,17 +37,9 @@ export async function POST(req: Request) {
       signal: AbortSignal.timeout(55_000),
     });
 
-    if (!upstream.ok) {
-      return NextResponse.json(
-        { message: "The translation service couldn't process this document. Please try again." },
-        { status: 502 },
-      );
-    }
+    if (!upstream.ok) return fail("upstream_error", 502);
     return NextResponse.json(await upstream.json());
   } catch {
-    return NextResponse.json(
-      { message: "The translation service didn't respond in time. Please try again." },
-      { status: 504 },
-    );
+    return fail("timeout", 504);
   }
 }

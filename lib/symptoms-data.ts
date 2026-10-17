@@ -9,104 +9,86 @@ export const LANG_NAME: Record<Lang, string> = {
   ur: "اردو",
 };
 
+
 export type Contact = {
-  number: string; // as displayed
-  tel: string; // digits for tel: link
-  label: string;
-  note?: string;
+  id: string;
+  number: string;
+  tel: string;
+  hasNote?: boolean;
 };
 
 export type Country = {
-  id: CountryId;
-  name: string;
-  lang: Lang; // language of the doctor-facing summary
-  primary: Contact; // the big call button
-  contacts: Contact[]; // everything else
-  note: string;
+  id: CountryId; 
+  lang: Lang; 
+  primary: { number: string; tel: string };
+  contacts: Contact[];
   source: { label: string; href: string };
 };
 
 export const COUNTRIES: Country[] = [
   {
     id: "PK",
-    name: "Pakistan",
     lang: "ur",
-    primary: { number: "1122", tel: "1122", label: "Rescue 1122 · ambulance, fire & rescue" },
+    primary: { number: "1122", tel: "1122" },
     contacts: [
-      { number: "115", tel: "115", label: "Edhi ambulance", note: "Charity-run, widely available" },
-      { number: "15", tel: "15", label: "Police" },
-      { number: "16", tel: "16", label: "Fire brigade" },
+      { id: "edhi", number: "115", tel: "115", hasNote: true },
+      { id: "police", number: "15", tel: "15" },
+      { id: "fire", number: "16", tel: "16" },
     ],
-    note: "Pakistan has no single nationwide emergency number, and 1122 is run provincially, so coverage varies by area. 112 may not work reliably. Operators may speak limited English.",
     source: { label: "rescue.gov.pk", href: "https://rescue.gov.pk/" },
   },
   {
     id: "US",
-    name: "United States",
     lang: "en",
-    primary: { number: "911", tel: "911", label: "Police, fire & ambulance" },
+    primary: { number: "911", tel: "911" },
     contacts: [
-      { number: "988", tel: "988", label: "Suicide & Crisis Lifeline", note: "Call or text, 24/7" },
-      { number: "1-800-222-1222", tel: "18002221222", label: "Poison Help", note: "Free and confidential" },
+      { id: "crisis", number: "988", tel: "988", hasNote: true },
+      { id: "poison", number: "1-800-222-1222", tel: "18002221222", hasNote: true },
     ],
-    note: "Emergency rooms must see anyone in an emergency, and bills can be high. Ask about costs for non-emergency care.",
     source: { label: "usa.gov", href: "https://www.usa.gov/emergency-services" },
   },
   {
     id: "GB",
-    name: "United Kingdom",
     lang: "en",
-    primary: { number: "999", tel: "999", label: "Police, fire, ambulance & coastguard" },
+    primary: { number: "999", tel: "999" },
     contacts: [
-      { number: "112", tel: "112", label: "Also connects to emergency services" },
-      { number: "111", tel: "111", label: "NHS 111 · urgent, not life-threatening", note: "England, Scotland and Wales" },
-      { number: "116 123", tel: "116123", label: "Samaritans", note: "Free, 24/7 emotional support" },
+      { id: "e112", number: "112", tel: "112" },
+      { id: "nhs111", number: "111", tel: "111", hasNote: true },
+      { id: "samaritans", number: "116 123", tel: "116123", hasNote: true },
     ],
-    note: "999 is for emergencies. For urgent problems that are not life-threatening, use NHS 111 or an urgent treatment centre.",
-    source: { label: "nhs.uk", href: "https://www.nhs.uk/nhs-services/urgent-and-emergency-care-services/when-to-call-999/" },
+    source: {
+      label: "nhs.uk",
+      href: "https://www.nhs.uk/nhs-services/urgent-and-emergency-care-services/when-to-call-999/",
+    },
   },
   {
     id: "DE",
-    name: "Germany",
     lang: "de",
-    primary: { number: "112", tel: "112", label: "Ambulance & fire" },
+    primary: { number: "112", tel: "112" },
     contacts: [
-      { number: "116 117", tel: "116117", label: "On-call doctor · urgent, not life-threatening", note: "Answers in German only" },
-      { number: "110", tel: "110", label: "Police" },
-      { number: "0800 111 0 111", tel: "08001110111", label: "Telefonseelsorge", note: "Free crisis support, German" },
+      { id: "onCall", number: "116 117", tel: "116117", hasNote: true },
+      { id: "police", number: "110", tel: "110" },
+      { id: "telefonseelsorge", number: "0800 111 0 111", tel: "08001110111", hasNote: true },
     ],
-    note: "112 is for life-threatening situations. Call 116 117 for urgent medical needs outside practice hours.",
     source: { label: "116117.de", href: "https://www.116117.de/de/englisch.php" },
   },
   {
     id: "FR",
-    name: "France",
     lang: "fr",
-    primary: { number: "112", tel: "112", label: "European emergency number" },
+    primary: { number: "112", tel: "112" },
     contacts: [
-      { number: "15", tel: "15", label: "SAMU · medical emergencies" },
-      { number: "18", tel: "18", label: "Fire & rescue (pompiers)" },
-      { number: "17", tel: "17", label: "Police" },
-      { number: "3114", tel: "3114", label: "Suicide prevention line", note: "Free, 24/7" },
-      { number: "114", tel: "114", label: "Emergency by SMS or fax", note: "For deaf or hard-of-hearing callers" },
+      { id: "samu", number: "15", tel: "15" },
+      { id: "fire", number: "18", tel: "18" },
+      { id: "police", number: "17", tel: "17" },
+      { id: "suicide", number: "3114", tel: "3114", hasNote: true },
+      { id: "sms", number: "114", tel: "114", hasNote: true },
     ],
-    note: "112 works everywhere in France. 15 reaches the SAMU directly for medical emergencies.",
-    source: { label: "service-public.gouv.fr", href: "https://www.service-public.gouv.fr/particuliers/actualites/A17758?lang=fr" },
+    source: {
+      label: "service-public.gouv.fr",
+      href: "https://www.service-public.gouv.fr/particuliers/actualites/A17758?lang=fr",
+    },
   },
 ];
-
-export const WARNING_SIGNS = [
-  "Chest pain or pressure",
-  "Severe difficulty breathing",
-  "Face drooping, arm weakness or trouble speaking",
-  "Heavy bleeding that will not stop",
-  "Fainting or not responding",
-  "Swelling of the face or throat after a sting, food or medicine",
-  "Thoughts of harming yourself",
-];
-
-/* ------------------------------ translations ------------------------------ */
-// Standard phrases only. REVIEW with a native/medical translator before launch.
 
 export type Opt = { id: string; t: T };
 
