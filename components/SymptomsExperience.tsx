@@ -489,7 +489,7 @@ export function SymptomsExperience() {
                     onChange={(e) => setText(e.target.value)}
                   />
 
-                  <div className="mt-6 flex items-center justify-between gap-3">
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                     <Button
                       variant="ghost"
                       disabled={busy}
