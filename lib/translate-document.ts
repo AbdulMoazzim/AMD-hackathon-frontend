@@ -1,11 +1,11 @@
-import { ApiError, createSession, LANG_EN } from "./consult";
-import { Lang } from "./symptoms-data";
+import { ApiError, codeFromResponse, createSession, LANG_EN } from "./consult";
+import type { Lang } from "./symptoms-data";
 
 export { ApiError };
 
+export type TargetLang = Lang;
 
-// Language names are shown in their own language on purpose.
-export const TARGET_LANGS: { id: Lang; label: string }[] = [
+export const TARGET_LANGS: { id: TargetLang; label: string }[] = [
   { id: "en", label: "English" },
   { id: "ur", label: "اردو (Urdu)" },
   { id: "fr", label: "Français" },
@@ -13,7 +13,7 @@ export const TARGET_LANGS: { id: Lang; label: string }[] = [
   { id: "es", label: "Español" },
 ];
 
-export const MAX_MB = 10;
+export const MAX_MB = 4;
 export const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
 export type DocumentResult = {
@@ -26,7 +26,10 @@ export type DocumentResult = {
 
 export type ChatReply = { answer: string; urgent: boolean; disclaimer?: string };
 
-/** Returns an error code ("type" | "size") or null when the file is fine. */
+// A document session is tied to one language, so it is replaced when the language changes. 
+export type DocSession = { sid: string; lang: Lang };
+
+// Returns an error code ("type" | "size") or null when the file is fine.
 export function validateFile(file: File): "type" | "size" | null {
   if (!ACCEPTED_TYPES.includes(file.type)) return "type";
   if (file.size > MAX_MB * 1024 * 1024) return "size";
@@ -51,26 +54,29 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   } catch {
     /* non-JSON body */
   }
-  if (!res.ok) throw new ApiError(str(obj(json).code) ?? "generic");
+  if (!res.ok) throw new ApiError(codeFromResponse(res.status, json));
   return json as T;
 }
 
-const newSession = async (target: Lang) =>
-  (
+// The documents page has no country picker, so everything follows the language the person chose.
+const newSession = async (lang: Lang): Promise<DocSession> => ({
+  sid: (
     await createSession({
-      ui_lang: LANG_EN[target],
-      country: "Not specified", // the documents page has no country picker
-      local_lang: LANG_EN[target],
+      ui_lang: LANG_EN[lang],
+      country: "Not specified",
+      local_lang: LANG_EN[lang],
+      preferred_lang: LANG_EN[lang],
     })
-  ).session_id;
+  ).session_id,
+  lang,
+});
 
-/* ------------------------------ upload ------------------------------ */
 
-async function upload(file: File, sid: string, target: Lang, signal?: AbortSignal) {
+async function upload(file: File, sid: string, lang: Lang, signal?: AbortSignal) {
   const body = new FormData();
   body.append("file", file);
   body.append("session_id", sid);
-  body.append("ui_lang", LANG_EN[target]);
+  body.append("ui_lang", LANG_EN[lang]);
 
   const r = obj(await request<unknown>("/api/docs", { method: "POST", body, signal }));
   const result: DocumentResult = {
@@ -86,26 +92,25 @@ async function upload(file: File, sid: string, target: Lang, signal?: AbortSigna
   return result;
 }
 
-/** Creates a session on first use, reuses it afterwards, and recreates it once if it expired. */
+// Reuses the session while the target language stays the same, creates a new one when it changes (so follow-up chat answers match), and recreates it once if it expired.
 export async function analyzeDocument(
   file: File,
   target: Lang,
-  sid: string | null,
+  session: DocSession | null,
   signal?: AbortSignal,
-): Promise<{ sid: string; result: DocumentResult }> {
-  let id = sid ?? (await newSession(target));
+): Promise<{ session: DocSession; result: DocumentResult }> {
+  let current = session && session.lang === target ? session : await newSession(target);
   try {
-    return { sid: id, result: await upload(file, id, target, signal) };
+    return { session: current, result: await upload(file, current.sid, target, signal) };
   } catch (e) {
     if (e instanceof ApiError && e.code === "session_expired") {
-      id = await newSession(target);
-      return { sid: id, result: await upload(file, id, target, signal) };
+      current = await newSession(target);
+      return { session: current, result: await upload(file, current.sid, target, signal) };
     }
     throw e;
   }
 }
 
-/* ------------------------------ follow-ups ------------------------------ */
 
 export async function askDocument(docId: string, sid: string, message: string, signal?: AbortSignal): Promise<ChatReply> {
   const r = obj(

@@ -181,9 +181,8 @@ function Tile({
       aria-pressed={selected}
       disabled={disabled}
       onClick={onClick}
-      className={`flex min-h-14 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 ${
-        selected ? "border-foreground bg-foreground text-background" : "bg-white hover:bg-muted"
-      }`}
+      className={`flex min-h-14 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 ${selected ? "border-foreground bg-foreground text-background" : "bg-white hover:bg-muted"
+        }`}
     >
       <span>{children}</span>
       {selected && <Check className="size-4 shrink-0" aria-hidden />}
@@ -264,9 +263,8 @@ function Summary({
 
       <div className="overflow-hidden rounded-2xl border">
         <div
-          className={`grid bg-muted text-xs font-semibold uppercase tracking-wide md:text-sm ${
-            showLocal ? "grid-cols-2" : "grid-cols-1"
-          }`}
+          className={`grid bg-muted text-xs font-semibold uppercase tracking-wide md:text-sm ${showLocal ? "grid-cols-2" : "grid-cols-1"
+            }`}
         >
           <div className="px-4 py-3" lang="en">
             {LANG_NAME.en}
@@ -392,6 +390,7 @@ export function SymptomsExperience() {
         ui_lang: LANG_EN[ui],
         country: COUNTRY_EN[country.id],
         local_lang: LANG_EN[country.lang],
+        preferred_lang: LANG_EN[ui],
       });
       setSid(s.session_id);
       await handle(await startConsult(s.session_id), s.session_id);

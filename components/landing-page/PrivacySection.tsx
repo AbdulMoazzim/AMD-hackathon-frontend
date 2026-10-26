@@ -9,7 +9,7 @@ export async function Privacy() {
   return (
     <section id="privacy" className="bg-[#D2FFF5] px-6 md:pt-32 md:pb-40 pt-26 pb-32">
       <div className="flex flex-col items-center text-center">
-        <Image src="/icon.svg" alt="icon" width={40} height={40} className="size-16" />
+        <Image src="/icon.svg" loading="eager" alt="icon" width={40} height={40} className="size-16" />
         <h2
           className={`${idiqlat.className} mx-auto mt-12 max-w-2xl text-[30px] font-semibold leading-tight md:text-[40px]`}
         >

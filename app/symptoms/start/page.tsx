@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { SymptomsExperience } from "@/components/SymptomsExperience";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,10 +7,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("symptomsTitle"), description: t("symptomsDescription") };
 }
 
-export default function SymptomsPage() {
+export default async function SymptomsPage() {
+  const locale = await getLocale();
   return (
     <main>
-      <SymptomsExperience />
+      <SymptomsExperience key={locale} />
     </main>
   );
 }

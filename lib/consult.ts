@@ -24,6 +24,13 @@ export type ConsultSummary = {
   disclaimer: string;
 };
 
+export type SessionInput = {
+  ui_lang: string; // language of the agent's questions: the site's selected language
+  country: string;
+  local_lang: string; // language of the doctor-facing summary
+  preferred_lang: string; // the person's own language (the "user_language" part of the summary)
+};
+
 export class ApiError extends Error {
   constructor(public code: string) {
     super(code);
@@ -45,6 +52,16 @@ export const LANG_EN: Record<Lang, string> = {
   ur: "Urdu",
 };
 
+// One place that turns a failed response into an error code (FastAPI sends { detail }, our proxy sends { code }). 
+export function codeFromResponse(status: number, json: unknown): string {
+  const o = typeof json === "object" && json !== null ? (json as Record<string, unknown>) : {};
+  if (typeof o.code === "string") return o.code;
+  if (typeof o.detail === "string" && /^[a-z_]+$/.test(o.detail)) return o.detail; // e.g. "session_expired"
+  if (status === 404 || status === 410) return "session_expired"; // unknown / expired session id
+  if (status === 413) return "too_large";
+  return "generic"; // includes 422 validation errors
+}
+
 async function call<T>(url: string, init?: RequestInit, signal?: AbortSignal): Promise<T> {
   let res: Response;
   try {
@@ -52,12 +69,13 @@ async function call<T>(url: string, init?: RequestInit, signal?: AbortSignal): P
   } catch {
     throw new ApiError("network");
   }
-  let json: unknown = await res.json();
-
-  if (!res.ok) {
-    const code = (json as { code?: unknown } | null)?.code;
-    throw new ApiError(typeof code === "string" ? code : "generic");
+  let json: unknown = null;
+  try {
+    json = await res.json();
+  } catch {
+    /* non-JSON body */
   }
+  if (!res.ok) throw new ApiError(codeFromResponse(res.status, json));
   return json as T;
 }
 
@@ -66,7 +84,7 @@ const post = (body?: unknown): RequestInit => ({
   ...(body === undefined ? {} : { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
 });
 
-export const createSession = (p: { ui_lang: string; country: string; local_lang: string }) =>
+export const createSession = (p: SessionInput) =>
   call<{ session_id: string; expires_in_seconds: number }>("/api/session", post(p));
 
 export const startConsult = (sid: string) =>

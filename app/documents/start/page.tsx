@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { DocumentTranslator } from "@/components/DocumentTranslator";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,10 +7,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("documentsTitle"), description: t("documentsDescription") };
 }
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  const locale = await getLocale();
   return (
     <main>
-      <DocumentTranslator />
+      <DocumentTranslator key={locale} />
     </main>
   );
 }

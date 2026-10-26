@@ -26,6 +26,7 @@ export async function Problem() {
               <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-t-3xl px-6 text-center text-sm italic md:text-[15px]">
                 <Image
                   src="/card-bg.svg"
+                  loading="eager"
                   alt=""
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"

@@ -22,11 +22,13 @@ import { Button } from "@/components/ui/button";
 import { idiqlat, TOAST_ID } from "@/lib/utils";
 import {
   ACCEPTED_TYPES,
+  ApiError,
   MAX_MB,
   TARGET_LANGS,
   analyzeDocument,
   askDocument,
   validateFile,
+  type DocSession,
   type DocumentResult,
 } from "@/lib/translate-document";
 import { Lang } from "@/lib/symptoms-data";
@@ -245,7 +247,7 @@ export function DocumentTranslator() {
   const [target, setTarget] = useState<Lang>("en");
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<DocumentResult | null>(null);
-  const [sid, setSid] = useState<string | null>(null); // session is reused across uploads
+  const [session, setSession] = useState<DocSession | null>(null); // reused across uploads while the language is unchanged
   const [dragging, setDragging] = useState(false);
 
   const fileInput = useRef<HTMLInputElement>(null);
@@ -280,12 +282,16 @@ export function DocumentTranslator() {
     abortRef.current = ctrl;
     setStatus("loading");
     try {
-      const r = await analyzeDocument(file, target, sid, ctrl.signal);
-      setSid(r.sid);
+      const r = await analyzeDocument(file, target, session, ctrl.signal);
+      setSession(r.session);
       setResult(r.result);
       setStatus("done");
-    } catch {
-      if (!ctrl.signal.aborted) toast.error(t("errors.generic"), { id: TOAST_ID });
+    } catch (e) {
+      if (!ctrl.signal.aborted) {
+        const code = e instanceof ApiError ? e.code : "generic";
+        const key = code === "too_large" ? "size" : code === "unsupported_type" ? "type" : "generic";
+        toast.error(t(`errors.${key}`, { max: MAX_MB }), { id: TOAST_ID });
+      }
       setStatus("idle");
     }
   }
@@ -314,8 +320,8 @@ export function DocumentTranslator() {
         </div>
 
         <div className="rounded-b-3xl bg-white px-6 py-10 shadow-lg md:px-10 md:py-14 print:p-0 print:shadow-none">
-          {status === "done" && result && sid ? (
-            <Result result={result} sid={sid} lang={target} onReset={reset} />
+          {status === "done" && result && session ? (
+            <Result result={result} sid={session.sid} lang={session.lang} onReset={reset} />
           ) : (
             <div className="mx-auto max-w-2xl space-y-8 print:hidden">
               <div>
