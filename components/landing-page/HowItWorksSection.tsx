@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { idiqlat } from "@/lib/utils";
 import { Card } from "../ui/card";
+import Image from "next/image";
 
 const ids = ["questions", "documents", "summary"] as const;
 
@@ -37,8 +38,16 @@ export async function HowItWorks() {
             </div>
 
             <Card
-              className={`md:w-[50vw] mx-0 aspect-7/5 w-full ${i % 2 === 1 ? "md:ms-10 md:order-1" : "md:me-10"}`}
-            />
+              className={`relative overflow-hidden md:w-[50vw] mx-0 aspect-7/5 w-full ${i % 2 === 1 ? "md:ms-10 md:order-1" : "md:me-10"}`}
+            >
+              <Image
+                src={`/card${i+1}.webp`}
+                alt={t(`steps.${id}.title`)}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover object-top"
+              />
+            </Card>
           </div>
         ))}
       </div>
